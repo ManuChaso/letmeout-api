@@ -3,6 +3,18 @@ const lobbyModel = require('../models/lobby.js');
 
 const lobbys = new Map();
 
+function sendMessage(message, socket, ws){
+    const codeSender = lobbys.get(socket)
+
+    ws.clients.forEach(client => {
+        const messageReceptor = lobbys.get(client);
+        
+        if(codeSender === messageReceptor){
+            client.send(JSON.stringify(message)); 
+        }
+    })
+}
+
 function createLobby(data, socket){
     return new Promise((resolve, reject) => {
         const createLobby = new lobbyModel({
@@ -62,5 +74,6 @@ module.exports = {
     lobbys, 
     createLobby,
     joinLobby,
-    playerState
+    playerState,
+    sendMessage
 }

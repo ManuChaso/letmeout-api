@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, playerState, lobbys } = require('./utils/utils.js');
+const { createLobby, joinLobby, playerState, lobbys, sendMessage } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,25 +28,14 @@ ws.on('connection', (socket) => {
 
     socket.on('message', message => {
         const access = JSON.parse(message);
+
         switch(access.tag){
             case 'createLobby': 
-                createLobby(access, socket).then(res => {
-                    ws.clients.forEach(client => {
-                        client.send(JSON.stringify(res));
-                    })
-                })
+                createLobby(access, socket).then(res => sendMessage(res, socket, ws))
             break;
-            case 'joinLobby': joinLobby(access, socket).then(res => {
-                ws.clients.forEach(client => {
-                    client.send(JSON.stringify(res));
-                })
-            })
+            case 'joinLobby': joinLobby(access, socket).then(res => sendMessage(res, socket, ws))
             break;
-            case 'playerState': playerState(access, socket).then(res => {
-                ws.clients.forEach(client => {
-                    client.send(JSON.stringify(res));
-                })
-            })
+            case 'playerState': playerState(access, socket).then(res => sendMessage(res, socket, ws))
             break;
             default: console.log('No se ha especificado tag'); break;
         }
