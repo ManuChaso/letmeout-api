@@ -2,12 +2,12 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const mongoose = require('mongoose');
-const randomstring = require('randomstring');
 
 const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
-const lobbyModel = require('./models/lobby.js');
+
+const { createLobby, joinLobby, playerState, lobbys } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -21,43 +21,34 @@ const connectDB = async () => {
         console.log('Lo siento, no quiero', err);
     }
 }
-
 connectDB();
 
 ws.on('connection', (socket) => {
     console.log('Cliente conectado');
 
     socket.on('message', message => {
-
         const access = JSON.parse(message);
-        
-        if(access.join){
-            lobbyModel.find({lobbyCode: access.lobbyCode})
-                .then(result => {
-                    console.log('encontrado', result);
-                    lobbyModel.findOneAndUpdate({lobbyCode: access.lobbyCode}, {$push: {players: {name: access.name, state: false}}}, {new: true})
-                        .then(lobbyUpdated => {
-                            console.log('lobby actualizado', lobbyUpdated);
-                        })
-                        .catch(err => {
-                            console.error('Error al actualizar lobby', err);
-                        })
+        switch(access.tag){
+            case 'createLobby': 
+                createLobby(access, socket).then(res => {
+                    ws.clients.forEach(client => {
+                        client.send(JSON.stringify(res));
+                    })
                 })
-                .catch(err => {
-                    console.error('Error al buscar en la base de datos', err);
+            break;
+            case 'joinLobby': joinLobby(access, socket).then(res => {
+                ws.clients.forEach(client => {
+                    client.send(JSON.stringify(res));
                 })
-        }else{
-            const createLobby = new lobbyModel({
-                lobbyCode : randomstring.generate({length: 4, charset: 'numeric'}),
-                players : [{name: access.name, state: false}]
             })
-            createLobby.save()
-                .then(savedLobby => {
-                    console.log('lobby generado', savedLobby);
+            break;
+            case 'playerState': playerState(access, socket).then(res => {
+                ws.clients.forEach(client => {
+                    client.send(JSON.stringify(res));
                 })
-                .catch(err => {
-                    console.error('error al guardar lobby', err)
-                })
+            })
+            break;
+            default: console.log('No se ha especificado tag'); break;
         }
     })
 });
