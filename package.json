@@ -4,6 +4,7 @@
   "description": "let me out api",
   "main": "index.js",
   "scripts": {
+    "commit": "git commit -m \"Auto commit\"",
     "dev": "nodemon index.js",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

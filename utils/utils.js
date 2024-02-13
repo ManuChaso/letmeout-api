@@ -3,18 +3,18 @@ const lobbyModel = require('../models/lobby.js');
 const lobbys = new Map();
 
 function sendMessage(res, socket, ws) {
-    if(lobbys.get(socket)){
-      const codeSender = lobbys.get(socket);
-      ws.clients.forEach((client) => {
-        const messageReceptor = lobbys.get(client);
-        if (codeSender === messageReceptor) {
-          client.send(JSON.stringify(res));
-        }
+  if (lobbys.get(socket)) {
+    const codeSender = lobbys.get(socket);
+    ws.clients.forEach((client) => {
+      const messageReceptor = lobbys.get(client);
+      if (codeSender === messageReceptor) {
+        client.send(JSON.stringify(res));
+      }
     });
-    }else{
-      socket.send(JSON.stringify(res))
-    }
+  } else {
+    socket.send(JSON.stringify(res));
   }
+}
 
 function createLobby(data, socket) {
   return new Promise((resolve, reject) => {
@@ -47,7 +47,6 @@ function joinLobby(data, socket) {
             { new: true }
           )
           .then((lobbyUpdated) => {
-
             lobbys.set(socket, lobbyUpdated.lobbyCode);
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
@@ -56,10 +55,10 @@ function joinLobby(data, socket) {
             console.error('❌ Error updating lobby ', err);
             res = {
               resMessage: 'Room not found',
-              error: true
-            }
-            resolve(res)
-            reject(err)
+              error: true,
+            };
+            resolve(res);
+            reject(err);
           });
       })
       .catch((err) => console.error('❌ Lobby not found', err));

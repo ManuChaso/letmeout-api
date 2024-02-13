@@ -39,8 +39,7 @@ ws.on('connection', (socket) => {
           .catch((error) => console.error(error));
         break;
       case 'joinLobby':
-        joinLobby(access, socket)
-          .then((res) => sendMessage(res, socket, ws))
+        joinLobby(access, socket).then((res) => sendMessage(res, socket, ws));
         break;
       case 'playerState':
         playerState(access).then((res) => sendMessage(res, socket, ws));
