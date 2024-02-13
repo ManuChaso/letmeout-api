@@ -31,7 +31,15 @@ function createLobby(data, socket) {
         console.log('✔ Lobby created with success:', savedLobby);
         resolve(savedLobby);
       })
-      .catch((err) => console.error('❌ Lobby creation failed', err));
+      .catch((err) => {
+        console.error('❌ Lobby creation failed', err);
+        res = {
+          resMessage: 'Room not found',
+          error: true
+        }
+        resolve(res)
+        reject(err)
+      });
   });
 }
 
