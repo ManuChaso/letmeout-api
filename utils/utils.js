@@ -2,19 +2,19 @@ const lobbyModel = require('../models/lobby.js');
 
 const lobbys = new Map();
 
-async function sendMessage(res, socket, ws) {
-  try {
-    const codeSender = lobbys.get(socket);
-    ws.clients.forEach((client) => {
-      const messageReceptor = lobbys.get(client);
-      if (codeSender === messageReceptor) {
-        client.send(JSON.stringify(res));
-      }
+function sendMessage(res, socket, ws) {
+    if(lobbys.get(socket)){
+      const codeSender = lobbys.get(socket);
+      ws.clients.forEach((client) => {
+        const messageReceptor = lobbys.get(client);
+        if (codeSender === messageReceptor) {
+          client.send(JSON.stringify(res));
+        }
     });
-  } catch (error) {
-    console.error('❌ Error sending message:', err);
+    }else{
+      socket.send(JSON.stringify(res))
+    }
   }
-}
 
 function createLobby(data, socket) {
   return new Promise((resolve, reject) => {
