@@ -42,7 +42,7 @@ ws.on('connection', (socket) => {
         joinLobby(access, socket).then((res) => sendMessage(res, socket, ws));
         break;
       case 'playerState':
-        playerState(access, socket).then((res) => sendMessage(res, socket, ws));
+        playerState(access).then((res) => sendMessage(res, socket, ws));
         break;
       default:
         console.log('No action (tag) defined on action');

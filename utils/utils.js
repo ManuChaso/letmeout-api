@@ -35,7 +35,7 @@ function createLobby(data, socket) {
   });
 }
 
-function joinLobby(data) {
+function joinLobby(data, socket) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: data.lobbyCode })
@@ -47,6 +47,8 @@ function joinLobby(data) {
             { new: true }
           )
           .then((lobbyUpdated) => {
+
+            lobbys.set(socket, lobbyUpdated.lobbyCode);
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
           })
@@ -56,7 +58,7 @@ function joinLobby(data) {
   });
 }
 
-function playerState(data) {
+function playerState(data, socket) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: data.lobbyCode })
