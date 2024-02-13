@@ -2,28 +2,28 @@ const lobbyModel = require('../models/lobby.js');
 
 const lobbys = new Map();
 
-function sendMessage(res, socket, ws) {
-  if (lobbys.get(socket)) {
-    const codeSender = lobbys.get(socket);
-    ws.clients.forEach((client) => {
-      const messageReceptor = lobbys.get(client);
+function sendMessage(res, client, ws) {
+  if (lobbys.get(client)) {
+    const codeSender = lobbys.get(client);
+    ws.clients.forEach((user) => {
+      const messageReceptor = lobbys.get(user);
       if (codeSender === messageReceptor) {
-        client.send(JSON.stringify(res));
+        user.send(JSON.stringify(res));
       }
     });
   } else {
-    socket.send(JSON.stringify(res));
+    client.send(JSON.stringify(res));
   }
 }
 
-function createLobby(data, socket) {
+function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
-      players: [{ name: data.name, state: false }],
+      players: [{ name: data.name, state: false, finalCode: Math.floor(Math.random() * 10), finalState: false }],
     });
 
-    lobbys.set(socket, createLobby.lobbyCode);
+    lobbys.set(client, createLobby.lobbyCode);
 
     createLobby
       .save()
@@ -31,11 +31,14 @@ function createLobby(data, socket) {
         console.log('✔ Lobby created with success:', savedLobby);
         resolve(savedLobby);
       })
-      .catch((err) => console.error('❌ Lobby creation failed', err));
+      .catch((err) => {
+        console.error('❌ Lobby creation failed', err);
+        reject(err);
+      });
   });
 }
 
-function joinLobby(data, socket) {
+function joinLobby(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: data.lobbyCode })
@@ -43,11 +46,20 @@ function joinLobby(data, socket) {
         lobbyModel
           .findOneAndUpdate(
             { lobbyCode: data.lobbyCode },
-            { $push: { players: { name: data.name, state: false } } },
+            {
+              $push: {
+                players: {
+                  name: data.name,
+                  state: false,
+                  finalCode: Math.floor(Math.random() * 10),
+                  finalState: false,
+                },
+              },
+            },
             { new: true }
           )
           .then((lobbyUpdated) => {
-            lobbys.set(socket, lobbyUpdated.lobbyCode);
+            lobbys.set(client, lobbyUpdated.lobbyCode);
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
           })
@@ -65,7 +77,7 @@ function joinLobby(data, socket) {
   });
 }
 
-function playerState(data, socket) {
+function playerState(data) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: data.lobbyCode })
@@ -80,7 +92,10 @@ function playerState(data, socket) {
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
           })
-          .catch((err) => console.error('❌ Error updating lobby ', err));
+          .catch((err) => {
+            console.error('❌ Error updating lobby ', err);
+            reject(err);
+          });
       })
       .catch((err) => console.error('❌ Lobby not found', err));
   });

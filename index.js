@@ -11,9 +11,9 @@ const { createLobby, joinLobby, playerState, sendMessage } = require('./utils/ut
 
 const PORT = process.env.PORT || 3000;
 
-// const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
+const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
 // ! Personal DB
-const mongoUrl = 'mongodb+srv://Leyinko:gjxyWCTbkIMAhOEE@letmeout.jm5y27d.mongodb.net/?retryWrites=true&w=majority';
+//const mongoUrl = 'mongodb+srv://Leyinko:gjxyWCTbkIMAhOEE@letmeout.jm5y27d.mongodb.net/?retryWrites=true&w=majority';
 
 const connectDB = async () => {
   try {
@@ -26,23 +26,27 @@ const connectDB = async () => {
 
 connectDB();
 
-ws.on('connection', (socket) => {
+ws.on('connection', (client) => {
   console.log('✔ Client connected');
 
-  socket.on('message', (message) => {
+  client.on('message', (message) => {
     const access = JSON.parse(message);
 
     switch (access.tag) {
       case 'createLobby':
-        createLobby(access, socket)
-          .then((res) => sendMessage(res, socket, ws))
-          .catch((error) => console.error(error));
+        createLobby(access, client)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.log('Error in promise N1', err));
         break;
       case 'joinLobby':
-        joinLobby(access, socket).then((res) => sendMessage(res, socket, ws));
+        joinLobby(access, client)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.log('Error in promise N2'));
         break;
       case 'playerState':
-        playerState(access).then((res) => sendMessage(res, socket, ws));
+        playerState(access)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.log('Error in promise N3'));
         break;
       default:
         console.log('No action (tag) defined on action');
@@ -51,9 +55,9 @@ ws.on('connection', (socket) => {
   });
 });
 
-server.on('upgrade', (request, socket, head) => {
-  ws.handleUpgrade(request, socket, head, (socket) => {
-    ws.emit('connection', socket, request);
+server.on('upgrade', (request, client, head) => {
+  ws.handleUpgrade(request, client, head, (client) => {
+    ws.emit('connection', client, request);
   });
 });
 
