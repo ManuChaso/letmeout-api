@@ -31,15 +31,7 @@ function createLobby(data, socket) {
         console.log('✔ Lobby created with success:', savedLobby);
         resolve(savedLobby);
       })
-      .catch((err) => {
-        console.error('❌ Lobby creation failed', err);
-        res = {
-          resMessage: 'Room not found',
-          error: true
-        }
-        resolve(res)
-        reject(err)
-      });
+      .catch((err) => console.error('❌ Lobby creation failed', err));
   });
 }
 
@@ -60,7 +52,15 @@ function joinLobby(data, socket) {
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
           })
-          .catch((err) => console.error('❌ Error updating lobby ', err));
+          .catch((err) => {
+            console.error('❌ Error updating lobby ', err);
+            res = {
+              resMessage: 'Room not found',
+              error: true
+            }
+            resolve(res)
+            reject(err)
+          });
       })
       .catch((err) => console.error('❌ Lobby not found', err));
   });
