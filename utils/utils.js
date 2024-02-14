@@ -76,10 +76,10 @@ function joinLobby(data, client) {
 function exitLobby(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
-      .findOneAndUpdate({ lobbyCode: data.lobbycode }, { $pull: { players: { name: data.name } } }, { new: true })
+      .findOneAndUpdate({ lobbyCode: data.lobbyCode }, { $pull: { players: { name: data.name } } }, { new: true })
       .then((updatedLobby) => {
         console.log('Player removed successfully', updatedLobby);
-        resolve(res);
+        resolve(updatedLobby);
         lobbys.delete(client);
       })
       .catch((err) => {
