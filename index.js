@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, playerState, sendMessage } = require('./utils/utils.js');
+const { createLobby, joinLobby, exitLobby, playerState, sendMessage } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -36,17 +36,22 @@ ws.on('connection', (client) => {
       case 'createLobby':
         createLobby(access, client)
           .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise N1', err));
+          .catch((err) => console.log('Error in promise at creating lobby', err));
         break;
       case 'joinLobby':
         joinLobby(access, client)
           .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise N2'));
+          .catch((err) => console.log('Error in promise at joining lobby', err));
+        break;
+      case 'exitLobby':
+        exitLobby(access, client)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.error('Error in promise at exiting lobby', err));
         break;
       case 'playerState':
         playerState(access)
           .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise N3'));
+          .catch((err) => console.log('Error in promise at updating player state', err));
         break;
       default:
         console.log('No action (tag) defined on action');

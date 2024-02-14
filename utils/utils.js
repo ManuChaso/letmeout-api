@@ -20,7 +20,7 @@ function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
-      players: [{ name: data.name, state: false, finalCode: Math.floor(Math.random() * 10), finalState: false }],
+      players: [{ name: data.name, ready: false, finalCode: Math.floor(Math.random() * 10), finalState: false }],
     });
 
     lobbys.set(client, createLobby.lobbyCode);
@@ -50,7 +50,7 @@ function joinLobby(data, client) {
               $push: {
                 players: {
                   name: data.name,
-                  state: false,
+                  ready: false,
                   finalCode: Math.floor(Math.random() * 10),
                   finalState: false,
                 },
@@ -65,15 +65,27 @@ function joinLobby(data, client) {
           })
           .catch((err) => {
             console.error('❌ Error updating lobby ', err);
-            res = {
-              resMessage: 'Room not found',
-              error: true,
-            };
-            resolve(res);
-            reject(err);
+            res = { error: true };
+            reject(res);
           });
       })
       .catch((err) => console.error('❌ Lobby not found', err));
+  });
+}
+
+function exitLobby(data, client) {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOneAndUpdate({ lobbyCode: data.lobbycode }, { $pull: { players: { name: data.name } } }, { new: true })
+      .then((updatedLobby) => {
+        console.log('Player removed successfully', updatedLobby);
+        resolve(res);
+        lobbys.delete(client);
+      })
+      .catch((err) => {
+        console.error('Error ocurred removing player from a lobby', err);
+        reject(err);
+      });
   });
 }
 
@@ -83,7 +95,7 @@ function playerState(data) {
       .findOne({ lobbyCode: data.lobbyCode })
       .then((lobby) => {
         const players = lobby.players.map((player) =>
-          player.name == data.name ? { ...player, state: data.playerState } : player
+          player.name == data.name ? { ...player, ready: data.playerState } : player
         );
 
         lobbyModel
@@ -104,6 +116,7 @@ function playerState(data) {
 module.exports = {
   createLobby,
   joinLobby,
+  exitLobby,
   playerState,
   sendMessage,
 };
