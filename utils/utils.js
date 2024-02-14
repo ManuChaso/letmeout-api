@@ -12,7 +12,9 @@ function sendMessage(res, client, ws) {
       }
     });
   } else {
-    client.send(JSON.stringify(res));
+    if (ws.clients.includes(client)) {
+      client.send(JSON.stringify(res));
+    }
   }
 }
 
@@ -23,7 +25,12 @@ function createLobby(data, client) {
       players: [{ name: data.name, ready: false, finalCode: Math.floor(Math.random() * 10), finalState: false }],
     });
 
-    lobbys.set(client, createLobby.lobbyCode);
+    const user = {
+      name: data.name,
+      lobbyCode: createLobby.lobbyCode,
+    };
+
+    lobbys.set(client, user);
 
     createLobby
       .save()
@@ -59,7 +66,12 @@ function joinLobby(data, client) {
             { new: true }
           )
           .then((lobbyUpdated) => {
-            lobbys.set(client, lobbyUpdated.lobbyCode);
+            const user = {
+              name: data.name,
+              lobbyCode: lobbyUpdated.lobbyCode,
+            };
+
+            lobbys.set(client, user);
             console.log('Lobby updated', lobbyUpdated);
             resolve(lobbyUpdated);
           })
@@ -87,6 +99,51 @@ function exitLobby(data, client) {
         reject(err);
       });
   });
+}
+
+function exitPlayer(client) {
+  if (lobbys.get(client)) {
+    return new Promise((resolve, reject) => {
+      lobbyModel
+        .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
+        .then((lobbyFound) => {
+          console.log(lobbyFound);
+
+          if (lobbyFound.players.length > 1) {
+            lobbyModel
+              .findOneAndUpdate(
+                { lobbyCode: lobbys.get(client).lobbyCode },
+                { $pull: { players: { name: lobbys.get(client).name } } },
+                { new: true }
+              )
+              .then((updatedLobby) => {
+                console.log(updatedLobby);
+                resolve(updatedLobby);
+              })
+              .catch((err) => {
+                console.error('Error updating lobby when the player lefts', err);
+                reject(err);
+              });
+          } else {
+            lobbyModel
+              .findOneAndDelete({ lobbyCode: lobbys.get(client).lobbyCode })
+              .then((lobbyDeleted) => {
+                console.log('Lobby deleted successfully: ', lobbyDeleted);
+
+                resolve(lobbyDeleted);
+              })
+              .catch((err) => {
+                console.error('Error deleting the lobby: ', err);
+                reject(err);
+              });
+          }
+        })
+        .catch((err) => {
+          console.error('Error: The client is not in any lobby', err);
+          reject(err);
+        });
+    });
+  }
 }
 
 function playerState(data) {
@@ -117,6 +174,7 @@ module.exports = {
   createLobby,
   joinLobby,
   exitLobby,
+  exitPlayer,
   playerState,
   sendMessage,
 };

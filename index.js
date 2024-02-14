@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, exitLobby, playerState, sendMessage } = require('./utils/utils.js');
+const { createLobby, joinLobby, exitLobby, exitPlayer, playerState, sendMessage } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -57,6 +57,12 @@ ws.on('connection', (client) => {
         console.log('No action (tag) defined on action');
         break;
     }
+  });
+
+  client.on('close', () => {
+    exitPlayer(client)
+      .then((res) => sendMessage(res, client, ws))
+      .catch((err) => console.log('Error leaving the lobby', err));
   });
 });
 
