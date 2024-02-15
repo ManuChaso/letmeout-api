@@ -12,7 +12,7 @@ function sendMessage(res, client, ws) {
       }
     });
   } else {
-    if (ws.clients.includes(client)) {
+    if (ws.clients.has(client)) {
       client.send(JSON.stringify(res));
     }
   }
@@ -49,37 +49,51 @@ function joinLobby(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: data.lobbyCode })
-      .then(() => {
-        lobbyModel
-          .findOneAndUpdate(
-            { lobbyCode: data.lobbyCode },
-            {
-              $push: {
-                players: {
-                  name: data.name,
-                  ready: false,
-                  finalCode: Math.floor(Math.random() * 10),
-                  finalState: false,
+      .then((lobbyFound) => {
+        lobbyFound.players.forEach((player) => {
+          if (player.name != data.name) {
+            lobbyModel
+              .findOneAndUpdate(
+                { lobbyCode: data.lobbyCode },
+                {
+                  $push: {
+                    players: {
+                      name: data.name,
+                      ready: false,
+                      finalCode: Math.floor(Math.random() * 10),
+                      finalState: false,
+                    },
+                  },
                 },
-              },
-            },
-            { new: true }
-          )
-          .then((lobbyUpdated) => {
-            const user = {
-              name: data.name,
-              lobbyCode: lobbyUpdated.lobbyCode,
-            };
+                { new: true }
+              )
+              .then((lobbyUpdated) => {
+                const user = {
+                  name: data.name,
+                  lobbyCode: lobbyUpdated.lobbyCode,
+                };
 
-            lobbys.set(client, user);
-            console.log('Lobby updated', lobbyUpdated);
-            resolve(lobbyUpdated);
-          })
-          .catch((err) => {
-            console.error('❌ Error updating lobby ', err);
-            res = { error: true };
-            reject(res);
-          });
+                lobbys.set(client, user);
+                console.log('Lobby updated', lobbyUpdated);
+                resolve(lobbyUpdated);
+              })
+              .catch((err) => {
+                console.error('❌ Error updating lobby ', err);
+                res = {
+                  message: "The code doesn't exist",
+                  error: true,
+                };
+                reject(res);
+              });
+          } else {
+            const res = {
+              message: 'User already taken',
+              error: true,
+            };
+            console.log(res);
+            resolve(res);
+          }
+        });
       })
       .catch((err) => console.error('❌ Lobby not found', err));
   });
@@ -102,8 +116,8 @@ function exitLobby(data, client) {
 }
 
 function exitPlayer(client) {
-  if (lobbys.get(client)) {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    if (lobbys.get(client)) {
       lobbyModel
         .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
         .then((lobbyFound) => {
@@ -142,8 +156,15 @@ function exitPlayer(client) {
           console.error('Error: The client is not in any lobby', err);
           reject(err);
         });
-    });
-  }
+    } else {
+      const res = {
+        message: 'Player refresh',
+        error: false,
+      };
+      resolve(res);
+      console.log(res);
+    }
+  });
 }
 
 function playerState(data) {
