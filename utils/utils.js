@@ -41,6 +41,7 @@ function createLobby(data, client) {
       .catch((err) => {
         console.error('❌ Lobby creation failed', err);
         reject(err);
+        // RESOLVE => DDBB DOWN
       });
   });
 }
@@ -79,15 +80,10 @@ function joinLobby(data, client) {
               })
               .catch((err) => {
                 console.error('❌ Error updating lobby ', err);
-                res = {
-                  message: "The code doesn't exist",
-                  error: true,
-                };
-                reject(res);
               });
           } else {
             const res = {
-              message: 'User already taken',
+              message: 'Username already taken',
               error: true,
             };
             console.log(res);
@@ -95,7 +91,14 @@ function joinLobby(data, client) {
           }
         });
       })
-      .catch((err) => console.error('❌ Lobby not found', err));
+      .catch((err) => {
+        res = {
+          message: 'Room not found',
+          error: true,
+        };
+        console.log(res);
+        resolve(res);
+      });
   });
 }
 
@@ -162,7 +165,7 @@ function exitPlayer(client) {
         error: false,
       };
       resolve(res);
-      console.log(res);
+      // console.log(res);
     }
   });
 }
