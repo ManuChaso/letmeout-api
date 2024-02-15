@@ -11,9 +11,9 @@ const { createLobby, joinLobby, exitLobby, exitPlayer, playerState, sendMessage 
 
 const PORT = process.env.PORT || 3000;
 
-// const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
+const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
 // ! Personal DB
-const mongoUrl = 'mongodb+srv://Leyinko:gjxyWCTbkIMAhOEE@letmeout.jm5y27d.mongodb.net/?retryWrites=true&w=majority';
+//const mongoUrl = 'mongodb+srv://Leyinko:gjxyWCTbkIMAhOEE@letmeout.jm5y27d.mongodb.net/?retryWrites=true&w=majority';
 
 const connectDB = async () => {
   try {
@@ -35,7 +35,10 @@ ws.on('connection', (client) => {
     switch (access.tag) {
       case 'createLobby':
         createLobby(access, client)
-          .then((res) => sendMessage(res, client, ws))
+          .then((res) => {
+            console.log(res);
+            sendMessage(res, client, ws);
+          })
           .catch((err) => console.log('Error in promise at creating lobby', err));
         break;
       case 'joinLobby':
@@ -46,7 +49,7 @@ ws.on('connection', (client) => {
       case 'exitLobby':
         exitLobby(access, client)
           .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.error('Error in promise at exiting lobby', err));
+          .catch((err) => console.error('Error in promise at leaving lobby', err));
         break;
       case 'playerState':
         playerState(access)

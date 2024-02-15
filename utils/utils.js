@@ -7,7 +7,7 @@ function sendMessage(res, client, ws) {
     const codeSender = lobbys.get(client);
     ws.clients.forEach((user) => {
       const messageReceptor = lobbys.get(user);
-      if (codeSender === messageReceptor) {
+      if (codeSender.lobbyCode == messageReceptor.lobbyCode) {
         user.send(JSON.stringify(res));
       }
     });
