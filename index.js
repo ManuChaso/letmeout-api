@@ -56,6 +56,7 @@ ws.on('connection', (client) => {
       case 'chatMessage':
         const res = chatMessage(access);
         sendMessage(res, client, ws);
+        break;
       default:
         console.log('No action (tag) defined on action');
         break;
