@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, exitLobby, playerState, sendMessage } = require('./utils/utils.js');
+const { createLobby, joinLobby, exitLobby, playerState, sendMessage, chatMessage } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -53,6 +53,9 @@ ws.on('connection', (client) => {
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error in promise at updating player state', err));
         break;
+      case 'chatMessage':
+        const res = chatMessage(access);
+        sendMessage(res, client, ws);
       default:
         console.log('No action (tag) defined on action');
         break;

@@ -176,10 +176,21 @@ function playerState(data) {
   });
 }
 
+function chatMessage(data) {
+  const message = {
+    tag: 'chat',
+    name: data.name,
+    message: data.message,
+  };
+
+  return message;
+}
+
 module.exports = {
   createLobby,
   joinLobby,
   exitLobby,
   playerState,
   sendMessage,
+  chatMessage,
 };
