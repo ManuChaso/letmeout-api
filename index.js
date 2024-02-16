@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, exitLobby, exitPlayer, playerState, sendMessage } = require('./utils/utils.js');
+const { createLobby, joinLobby, exitLobby, playerState, sendMessage } = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -35,10 +35,7 @@ ws.on('connection', (client) => {
     switch (access.tag) {
       case 'createLobby':
         createLobby(access, client)
-          .then((res) => {
-            console.log(res);
-            sendMessage(res, client, ws);
-          })
+          .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error in promise at creating lobby', err));
         break;
       case 'joinLobby':
@@ -47,7 +44,7 @@ ws.on('connection', (client) => {
           .catch((err) => console.log('Error in promise at joining lobby', err));
         break;
       case 'exitLobby':
-        exitLobby(access, client)
+        exitLobby(client)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.error('Error in promise at leaving lobby', err));
         break;
@@ -63,7 +60,7 @@ ws.on('connection', (client) => {
   });
 
   client.on('close', () => {
-    exitPlayer(client)
+    exitLobby(client)
       .then((res) => sendMessage(res, client, ws))
       .catch((err) => console.log('Error leaving the lobby', err));
   });
