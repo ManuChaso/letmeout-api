@@ -121,6 +121,7 @@ function exitLobby(client) {
               { new: true }
             )
             .then((updatedLobby) => {
+              lobbys.delete(client);
               console.log(updatedLobby);
               resolve(updatedLobby);
             })
