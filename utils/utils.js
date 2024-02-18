@@ -134,7 +134,7 @@ function exitLobby(client) {
             .findOneAndDelete({ lobbyCode: clientLobbyCode.lobbyCode })
             .then((lobbyDeleted) => {
               console.log('Lobby deleted successfully: ', lobbyDeleted);
-
+              lobbys.delete(client);
               resolve(lobbyDeleted);
             })
             .catch((err) => {
