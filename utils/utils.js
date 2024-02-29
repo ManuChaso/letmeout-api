@@ -21,7 +21,9 @@ function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
-      players: [{ name: data.name, ready: false, finalCode: Math.floor(Math.random() * 10), finalState: false }],
+      players: [
+        { name: data.name, ready: false, finalCode: Math.floor(Math.random() * 10), finalState: false, room: '' },
+      ],
     });
 
     const user = {
@@ -64,6 +66,7 @@ function joinLobby(data, client) {
                       ready: false,
                       finalCode: Math.floor(Math.random() * 10),
                       finalState: false,
+                      room: '',
                     },
                   },
                 },
@@ -187,6 +190,81 @@ function chatMessage(data) {
   return message;
 }
 
+function assignRoom(data) {
+  const rooms = ['r1', 'r2', 'r3'];
+
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: data.lobbyCode })
+      .then((foundLobby) => {
+        const players = foundLobby.players;
+        players.forEach((player) => {
+          const availableRooms = rooms.filter(
+            (room) => !foundLobby.players.some((p) => p.room === room && p !== player)
+          );
+          player.room = availableRooms[Math.floor(Math.random() * availableRooms.length)];
+        });
+
+        lobbyModel
+          .findByIdAndUpdate({ lobbyCode: data.lobbyCode }, { $set: { players: players } }, { new: true })
+          .then((lobbyUpdated) => {
+            console.log('Lobby updated with rooms: ', lobbyUpdated);
+            resolve(lobbyUpdated);
+          })
+          .catch((err) => {
+            console.error('Error assigning rooms: ', err);
+            reject(err);
+          });
+      })
+      .catch((err) => {
+        console.error('Lobby not found: ', err);
+        reject(err);
+      });
+  });
+}
+
+function shareTime(data) {
+  const res = {
+    time: data.time,
+    donor: data.donor,
+    receiver: data.receiver,
+  };
+
+  return res;
+}
+
+function checkFinalCode(data) {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: data.lobbyCode })
+      .then((foundLobby) => {
+        const code = [];
+
+        foundLobby.players.forEach((player) => code.push(player.finalCode));
+
+        const res = {
+          message: '',
+          complete: false,
+        };
+
+        if (code.join('') == data.finalCode) {
+          res.message = 'Game complete';
+          res.complete = true;
+          resolve(res);
+          console.log('Game complete: ', res);
+        } else {
+          res.message = 'Wrong code';
+          resolve(res);
+          console.log('Wrong code: ', res);
+        }
+      })
+      .catch((err) => {
+        console.log('Lobby not found: ', err);
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   createLobby,
   joinLobby,
@@ -194,4 +272,7 @@ module.exports = {
   playerState,
   sendMessage,
   chatMessage,
+  assignRoom,
+  shareTime,
+  checkFinalCode,
 };

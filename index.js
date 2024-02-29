@@ -7,7 +7,17 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const { createLobby, joinLobby, exitLobby, playerState, sendMessage, chatMessage } = require('./utils/utils.js');
+const {
+  createLobby,
+  joinLobby,
+  exitLobby,
+  playerState,
+  sendMessage,
+  chatMessage,
+  assignRoom,
+  shareTime,
+  checkFinalCode,
+} = require('./utils/utils.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -38,25 +48,47 @@ ws.on('connection', (client) => {
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error in promise at creating lobby', err));
         break;
+
       case 'joinLobby':
         joinLobby(access, client)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error in promise at joining lobby', err));
         break;
+
       case 'exitLobby':
         exitLobby(client)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.error('Error in promise at leaving lobby', err));
         break;
+
       case 'playerState':
         playerState(access)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error in promise at updating player state', err));
         break;
+
       case 'chatMessage':
         const res = chatMessage(access);
         sendMessage(res, client, ws);
         break;
+
+      case 'assignRoom':
+        assignRoom(access)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.log('Error assigning rooms', err));
+        break;
+
+      case 'shareTime':
+        const response = shareTime(access);
+        sendMessage(response, client, ws);
+        break;
+
+      case 'checkFinalCode':
+        checkFinalCode(access)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err = console.log('Error checking final code: ', err)));
+        break;
+
       default:
         console.log('No action (tag) defined on action');
         break;
