@@ -1,4 +1,5 @@
 const lobbyModel = require('../models/lobby.js');
+const randomstring = require('randomstring');
 
 const lobbys = new Map();
 
@@ -277,9 +278,9 @@ function checkFinalCode(data) {
 }
 
 function generateId() {
-  const firstId = Randomstring.generate({ length: 4, charset: 'numeric' });
-  const secondId = Randomstring.generate({ length: 2, charset: 'alphabetic' });
-  const thirdId = Randomstring.generate({ length: 2, charset: 'numeric' });
+  const firstId = randomstring.generate({ length: 4, charset: 'numeric' });
+  const secondId = randomstring.generate({ length: 2, charset: 'alphabetic' });
+  const thirdId = randomstring.generate({ length: 2, charset: 'numeric' });
 
   return `#${firstId}-${secondId}-${thirdId}`;
 }
