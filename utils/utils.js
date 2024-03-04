@@ -179,7 +179,9 @@ function playerState(data) {
           .then((lobbyUpdated) => {
             console.log('Lobby updated', lobbyUpdated);
 
-            const newLobby = { ...lobbyUpdated, finalCode: 'X' };
+            const newPlayers = lobbyUpdated.players.map((player) => (player.finalCode = 'X'));
+
+            const newLobby = { ...updatedLobby, players: newPlayers };
 
             resolve(newLobby);
           })
