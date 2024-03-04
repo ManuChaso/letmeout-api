@@ -22,7 +22,14 @@ function createLobby(data, client) {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
       players: [
-        { name: data.name, ready: false, finalCode: Math.floor(Math.random() * 10), finalState: false, room: '' },
+        {
+          name: data.name,
+          id: generateId(),
+          ready: false,
+          finalCode: Math.floor(Math.random() * 10),
+          finalState: false,
+          room: '',
+        },
       ],
     });
 
@@ -63,6 +70,7 @@ function joinLobby(data, client) {
                   $push: {
                     players: {
                       name: data.name,
+                      id: generateId(),
                       ready: false,
                       finalCode: Math.floor(Math.random() * 10),
                       finalState: false,
@@ -169,7 +177,10 @@ function playerState(data) {
           .findOneAndUpdate({ lobbyCode: data.lobbyCode }, { players: players }, { new: true })
           .then((lobbyUpdated) => {
             console.log('Lobby updated', lobbyUpdated);
-            resolve(lobbyUpdated);
+
+            const newLobby = { ...lobbyUpdated, finalCode: 'X' };
+
+            resolve(newLobby);
           })
           .catch((err) => {
             console.error('❌ Error updating lobby ', err);
@@ -263,6 +274,14 @@ function checkFinalCode(data) {
         reject(err);
       });
   });
+}
+
+function generateId() {
+  const firstId = Randomstring.generate({ length: 4, charset: 'numeric' });
+  const secondId = Randomstring.generate({ length: 2, charset: 'alphabetic' });
+  const thirdId = Randomstring.generate({ length: 2, charset: 'numeric' });
+
+  return `#${firstId}-${secondId}-${thirdId}`;
 }
 
 module.exports = {
