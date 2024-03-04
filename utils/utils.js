@@ -179,11 +179,14 @@ function playerState(data) {
           .then((lobbyUpdated) => {
             console.log('Lobby updated', lobbyUpdated);
 
-            const newPlayers = lobbyUpdated.players.map((player) => (player.finalCode = 'X'));
+            const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: 'X' }));
 
-            const newLobby = { ...updatedLobby, players: newPlayers };
+            const res = {
+              lobbyCode: lobbyUpdated.lobbyCode,
+              players: newPlayers,
+            };
 
-            resolve(newLobby);
+            resolve(res);
           })
           .catch((err) => {
             console.error('❌ Error updating lobby ', err);
