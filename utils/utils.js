@@ -18,6 +18,46 @@ function sendMessage(res, client, ws) {
   }
 }
 
+function getLobbys() {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .find({})
+      .then((lobbys) => {
+        let lobbysArray = [];
+
+        lobbys.forEach((lobby) => {
+          const lobbyInfo = {
+            lobbyCode: lobby.lobbyCode,
+            creator: lobby.players[0].name,
+          };
+
+          lobbysArray.push(lobbyInfo);
+        });
+
+        resolve(lobbysArray);
+      })
+      .catch((err) => {
+        console.log('Error al buscar los lobbys activos');
+        reject(err);
+      });
+  });
+}
+
+function getLobby(lobbyCode) {
+  console.log(lobbyCode);
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: lobbyCode })
+      .then((lobbyFound) => {
+        resolve(lobbyFound);
+      })
+      .catch((err) => {
+        console.log('Error al buscar lobby: ', err);
+        reject(err);
+      });
+  });
+}
+
 function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
@@ -179,7 +219,7 @@ function playerState(data) {
           .then((lobbyUpdated) => {
             console.log('Lobby updated', lobbyUpdated);
 
-            const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: 'X' }));
+            const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: '2' }));
 
             const res = {
               lobbyCode: lobbyUpdated.lobbyCode,
@@ -282,6 +322,8 @@ function checkFinalCode(data) {
   });
 }
 
+function getIdCard(data) {}
+
 function generateId() {
   const firstId = randomstring.generate({ length: 4, charset: 'numeric' });
   const secondId = randomstring.generate({ length: 2, charset: 'alphabetic' });
@@ -291,6 +333,8 @@ function generateId() {
 }
 
 module.exports = {
+  getLobbys,
+  getLobby,
   createLobby,
   joinLobby,
   exitLobby,

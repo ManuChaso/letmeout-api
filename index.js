@@ -18,6 +18,8 @@ const {
   shareTime,
   checkFinalCode,
 } = require('./utils/utils.js');
+const { imageGenerator } = require('./imageGenerator/imageGenerator.js');
+const { startIanasBot } = require('./IanasBot/ianasBot.js');
 
 const PORT = process.env.PORT || 3000;
 
@@ -89,6 +91,10 @@ ws.on('connection', (client) => {
           .catch((err = console.log('Error checking final code: ', err)));
         break;
 
+      case 'generateAccessCard':
+        imageGenerator(access).then((res) => client.send(res));
+        break;
+
       default:
         console.log('No action (tag) defined on action');
         break;
@@ -111,3 +117,5 @@ server.on('upgrade', (request, client, head) => {
 server.listen(PORT, () => {
   console.log('Server deployed on port', PORT);
 });
+
+startIanasBot();
