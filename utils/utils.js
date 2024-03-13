@@ -242,7 +242,7 @@ function assignRoom(data) {
 
 function shareTime(data) {
   const res = {
-    time: data.time,
+    tag: 'shareTime',
     donor: data.donor,
     receiver: data.receiver,
   };
