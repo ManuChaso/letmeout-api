@@ -3,6 +3,12 @@ const randomstring = require('randomstring');
 
 const lobbys = new Map();
 
+const f1KeyWords = [
+  ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets'], //bathroom
+  ['naranjas', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
+  ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
+];
+
 function sendMessage(res, client, ws) {
   if (lobbys.has(client)) {
     const user = lobbys.get(client);
@@ -85,7 +91,13 @@ function createLobby(data, client) {
       .save()
       .then((savedLobby) => {
         console.log('✔ Lobby created with success:', savedLobby);
-        resolve(savedLobby);
+
+        const res = {
+          tag: 'createLobby',
+          lobbyCode: savedLobby.lobbyCode,
+          players: savedLobby.players,
+        };
+        resolve(res);
       })
       .catch((err) => {
         console.error('❌ Lobby creation failed', err);
@@ -129,7 +141,14 @@ function joinLobby(data, client) {
 
                 lobbys.set(client, user);
                 console.log('Lobby updated', lobbyUpdated);
-                resolve(lobbyUpdated);
+
+                const res = {
+                  tag: 'createLobby',
+                  lobbyCode: lobbyUpdated.lobbyCode,
+                  players: lobbyUpdated.players,
+                };
+
+                resolve(res);
               })
               .catch((err) => {
                 console.log('Error updating lobby', err);
@@ -222,6 +241,7 @@ function playerState(data) {
             const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: '2' }));
 
             const res = {
+              tag: 'playerState',
               lobbyCode: lobbyUpdated.lobbyCode,
               players: newPlayers,
             };
@@ -238,13 +258,30 @@ function playerState(data) {
 }
 
 function chatMessage(data) {
-  const message = {
+  console.log(data.signal);
+  const resMessage = {
     tag: 'chat',
+    ticket: '',
     name: data.name,
     message: data.message,
   };
+  if (data.signal) {
+    const message = data.message.split(' ');
+    console.log(message);
 
-  return message;
+    message.forEach((word) => {
+      for (let i = 0; i < 3; i++) {
+        if (f1KeyWords[i].includes(word)) {
+          i == 0 && (resMessage.ticket = 'bathroom');
+          i == 1 && (resMessage.ticket = 'kitchen');
+          i == 2 && (resMessage.ticket = 'living');
+        }
+      }
+    });
+    return resMessage;
+  } else {
+    return resMessage;
+  }
 }
 
 function assignRoom(data) {
@@ -266,7 +303,14 @@ function assignRoom(data) {
           .findByIdAndUpdate({ lobbyCode: data.lobbyCode }, { $set: { players: players } }, { new: true })
           .then((lobbyUpdated) => {
             console.log('Lobby updated with rooms: ', lobbyUpdated);
-            resolve(lobbyUpdated);
+
+            const res = {
+              tag: 'assignRoom',
+              lobbyCode: lobbyUpdated.lobbyCode,
+              players: lobbyUpdated.players,
+            };
+
+            resolve(res);
           })
           .catch((err) => {
             console.error('Error assigning rooms: ', err);
@@ -282,7 +326,7 @@ function assignRoom(data) {
 
 function shareTime(data) {
   const res = {
-    time: data.time,
+    tag: 'shareTime',
     donor: data.donor,
     receiver: data.receiver,
   };
@@ -300,6 +344,7 @@ function checkFinalCode(data) {
         foundLobby.players.forEach((player) => code.push(player.finalCode));
 
         const res = {
+          tag: 'finalCode',
           message: '',
           complete: false,
         };
@@ -321,8 +366,6 @@ function checkFinalCode(data) {
       });
   });
 }
-
-function getIdCard(data) {}
 
 function generateId() {
   const firstId = randomstring.generate({ length: 4, charset: 'numeric' });
