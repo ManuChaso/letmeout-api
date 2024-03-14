@@ -3,6 +3,12 @@ const randomstring = require('randomstring');
 
 const lobbys = new Map();
 
+const f1KeyWords = [
+  ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets'], //bathroom
+  ['naranjas', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
+  ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
+];
+
 function sendMessage(res, client, ws) {
   if (lobbys.has(client)) {
     const user = lobbys.get(client);
@@ -16,6 +22,46 @@ function sendMessage(res, client, ws) {
       client.send(JSON.stringify(res));
     }
   }
+}
+
+function getLobbys() {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .find({})
+      .then((lobbys) => {
+        let lobbysArray = [];
+
+        lobbys.forEach((lobby) => {
+          const lobbyInfo = {
+            lobbyCode: lobby.lobbyCode,
+            creator: lobby.players[0].name,
+          };
+
+          lobbysArray.push(lobbyInfo);
+        });
+
+        resolve(lobbysArray);
+      })
+      .catch((err) => {
+        console.log('Error al buscar los lobbys activos');
+        reject(err);
+      });
+  });
+}
+
+function getLobby(lobbyCode) {
+  console.log(lobbyCode);
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: lobbyCode })
+      .then((lobbyFound) => {
+        resolve(lobbyFound);
+      })
+      .catch((err) => {
+        console.log('Error al buscar lobby: ', err);
+        reject(err);
+      });
+  });
 }
 
 function createLobby(data, client) {
@@ -45,7 +91,13 @@ function createLobby(data, client) {
       .save()
       .then((savedLobby) => {
         console.log('✔ Lobby created with success:', savedLobby);
-        resolve(savedLobby);
+
+        const res = {
+          tag: 'createLobby',
+          lobbyCode: savedLobby.lobbyCode,
+          players: savedLobby.players,
+        };
+        resolve(res);
       })
       .catch((err) => {
         console.error('❌ Lobby creation failed', err);
@@ -89,7 +141,14 @@ function joinLobby(data, client) {
 
                 lobbys.set(client, user);
                 console.log('Lobby updated', lobbyUpdated);
-                resolve(lobbyUpdated);
+
+                const res = {
+                  tag: 'createLobby',
+                  lobbyCode: lobbyUpdated.lobbyCode,
+                  players: lobbyUpdated.players,
+                };
+
+                resolve(res);
               })
               .catch((err) => {
                 console.log('Error updating lobby', err);
@@ -179,9 +238,10 @@ function playerState(data) {
           .then((lobbyUpdated) => {
             console.log('Lobby updated', lobbyUpdated);
 
-            const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: 'X' }));
+            const newPlayers = lobbyUpdated.players.map((player) => (player = { ...player, finalCode: '2' }));
 
             const res = {
+              tag: 'playerState',
               lobbyCode: lobbyUpdated.lobbyCode,
               players: newPlayers,
             };
@@ -198,13 +258,30 @@ function playerState(data) {
 }
 
 function chatMessage(data) {
-  const message = {
+  console.log(data.signal);
+  const resMessage = {
     tag: 'chat',
+    ticket: '',
     name: data.name,
     message: data.message,
   };
+  if (data.signal) {
+    const message = data.message.split(' ');
+    console.log(message);
 
-  return message;
+    message.forEach((word) => {
+      for (let i = 0; i < 3; i++) {
+        if (f1KeyWords[i].includes(word)) {
+          i == 0 && (resMessage.ticket = 'bathroom');
+          i == 1 && (resMessage.ticket = 'kitchen');
+          i == 2 && (resMessage.ticket = 'living');
+        }
+      }
+    });
+    return resMessage;
+  } else {
+    return resMessage;
+  }
 }
 
 function assignRoom(data) {
@@ -226,7 +303,14 @@ function assignRoom(data) {
           .findByIdAndUpdate({ lobbyCode: data.lobbyCode }, { $set: { players: players } }, { new: true })
           .then((lobbyUpdated) => {
             console.log('Lobby updated with rooms: ', lobbyUpdated);
-            resolve(lobbyUpdated);
+
+            const res = {
+              tag: 'assignRoom',
+              lobbyCode: lobbyUpdated.lobbyCode,
+              players: lobbyUpdated.players,
+            };
+
+            resolve(res);
           })
           .catch((err) => {
             console.error('Error assigning rooms: ', err);
@@ -260,6 +344,7 @@ function checkFinalCode(data) {
         foundLobby.players.forEach((player) => code.push(player.finalCode));
 
         const res = {
+          tag: 'finalCode',
           message: '',
           complete: false,
         };
@@ -291,6 +376,8 @@ function generateId() {
 }
 
 module.exports = {
+  getLobbys,
+  getLobby,
   createLobby,
   joinLobby,
   exitLobby,
