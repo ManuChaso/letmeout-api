@@ -17,6 +17,7 @@ const {
   assignRoom,
   shareTime,
   checkFinalCode,
+  generateFinalCode,
 } = require('./utils/utils.js');
 const { imageGenerator } = require('./imageGenerator/imageGenerator.js');
 const { startIanasBot } = require('./IanasBot/ianasBot.js');
@@ -103,7 +104,14 @@ ws.on('connection', (client) => {
       case 'generateAccessCard':
         imageGenerator(access).then((res) => client.send(res));
         break;
-
+      case 'generateFinalCode':
+        generateFinalCode(client);
+        break;
+      case 'checkFinalCode':
+        checkFinalCode(access)
+          .then((res) => sendMessage(res, client, ws))
+          .catch((err) => console.log('Error checking final code', err));
+        break;
       default:
         console.log('No action (tag) defined on action');
         break;

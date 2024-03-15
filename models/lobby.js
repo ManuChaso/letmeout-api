@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const lobbySchema = new Schema({
   lobbyCode: String,
   players: [],
+  finalCode: String,
 });
 
 const lobbyModel = mongoose.model('lobby', lobbySchema, 'lobby');
