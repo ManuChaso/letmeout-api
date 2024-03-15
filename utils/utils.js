@@ -78,6 +78,7 @@ function createLobby(data, client) {
           room: '',
         },
       ],
+      finalCode: '',
     });
 
     const user = {
@@ -375,6 +376,55 @@ function generateId() {
   return `#${firstId}-${secondId}-${thirdId}`;
 }
 
+function generateFinalCode(client) {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: lobbys.get(client) })
+      .then((lobbyFound) => {
+        let finalCode = '';
+
+        lobbyFound.players.forEach((player) => (finalCode += player.finalCode.toString()));
+
+        console.log(finalCode);
+
+        lobbyModel
+          .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { finalCode: finalCode }, { new: true })
+          .then((lobbyUpdated) => console.log(lobbyUpdated))
+          .catch((err) => console.log('Error updating lobby', err));
+      })
+      .catch((err) => {
+        console.log('Error generating final code', err);
+      });
+  });
+}
+
+function checkFinalCode(data) {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: data.lobbyCode })
+      .then((lobbyFound) => {
+        if (lobbyFound.finalCode == data.message) {
+          const res = {
+            message: 'Congratulations, you win the game',
+            win: true,
+          };
+
+          resolve(res);
+        } else {
+          const res = {
+            message: 'You are shit',
+            win: false,
+          };
+          resolve(res);
+        }
+      })
+      .catch((err) => {
+        console.log('Error checking the final code', err);
+        reject(err);
+      });
+  });
+}
+
 module.exports = {
   getLobbys,
   getLobby,
@@ -387,4 +437,5 @@ module.exports = {
   assignRoom,
   shareTime,
   checkFinalCode,
+  generateFinalCode,
 };
