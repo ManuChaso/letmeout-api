@@ -108,7 +108,7 @@ ws.on('connection', (client) => {
         generateFinalCode(client);
         break;
       case 'checkFinalCode':
-        checkFinalCode(access)
+        checkFinalCode(access, client)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error checking final code', err));
         break;

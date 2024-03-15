@@ -398,10 +398,10 @@ function generateFinalCode(client) {
   });
 }
 
-function checkFinalCode(data) {
+function checkFinalCode(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
-      .findOne({ lobbyCode: data.lobbyCode })
+      .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         if (lobbyFound.finalCode == data.message) {
           const res = {
