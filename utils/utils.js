@@ -379,7 +379,7 @@ function generateId() {
 function generateFinalCode(client) {
   return new Promise((resolve, reject) => {
     lobbyModel
-      .findOne({ lobbyCode: lobbys.get(client) })
+      .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         let finalCode = '';
 
