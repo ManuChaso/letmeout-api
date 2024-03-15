@@ -98,7 +98,7 @@ ws.on('connection', (client) => {
       case 'checkFinalCode':
         checkFinalCode(access)
           .then((res) => sendMessage(res, client, ws))
-          .catch((err = console.log('Error checking final code: ', err)));
+          .catch((err) => console.log('Error checking final code', err));
         break;
 
       case 'generateAccessCard':
