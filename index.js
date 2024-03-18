@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
@@ -43,6 +44,7 @@ connectDB();
 
 //Routes for ranking
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
