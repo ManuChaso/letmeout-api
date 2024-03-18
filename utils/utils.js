@@ -372,6 +372,7 @@ function checkFinalCode(data, client) {
       .then((lobbyFound) => {
         if (lobbyFound.finalCode == data.message) {
           const res = {
+            tag: 'checkExit',
             message: 'Congratulations, you win the game',
             win: true,
           };
@@ -379,6 +380,7 @@ function checkFinalCode(data, client) {
           resolve(res);
         } else {
           const res = {
+            tag: 'checkExit',
             message: 'You are shit',
             win: false,
           };
