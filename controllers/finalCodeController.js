@@ -1,15 +1,14 @@
 const lobbyModel = require('../models/lobby');
 
 function getFinalCode(req, res) {
-  const data = req.body;
+  console.log(req.query.lobbyCode);
+  console.log(req.query.id);
 
-  console.log(req);
-
-  lobbyModel.findOne({ lobbyCode: data.lobbyCode }).then((lobbyFound) => {
+  lobbyModel.findOne({ lobbyCode: req.query.lobbyCode }).then((lobbyFound) => {
     console.log(lobbyFound);
     lobbyFound.players
       .forEach((player) => {
-        if (player.id == data.id) {
+        if (player.id == req.query.id) {
           res.status(200).send({ message: 'finalCode', finalCode: player.finalCode });
         }
       })
