@@ -335,39 +335,6 @@ function shareTime(data) {
   return res;
 }
 
-function checkFinalCode(data) {
-  return new Promise((resolve, reject) => {
-    lobbyModel
-      .findOne({ lobbyCode: data.lobbyCode })
-      .then((foundLobby) => {
-        const code = [];
-
-        foundLobby.players.forEach((player) => code.push(player.finalCode));
-
-        const res = {
-          tag: 'finalCode',
-          message: '',
-          complete: false,
-        };
-
-        if (code.join('') == data.finalCode) {
-          res.message = 'Game complete';
-          res.complete = true;
-          resolve(res);
-          console.log('Game complete: ', res);
-        } else {
-          res.message = 'Wrong code';
-          resolve(res);
-          console.log('Wrong code: ', res);
-        }
-      })
-      .catch((err) => {
-        console.log('Lobby not found: ', err);
-        reject(err);
-      });
-  });
-}
-
 function generateId() {
   const firstId = randomstring.generate({ length: 4, charset: 'numeric' });
   const secondId = randomstring.generate({ length: 2, charset: 'alphabetic' });
