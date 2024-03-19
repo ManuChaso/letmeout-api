@@ -4,6 +4,8 @@ function getFinalCode(req, res) {
   console.log(req.query.lobbyCode);
   console.log(req.query.id);
 
+  console.log('Request', req);
+
   lobbyModel
     .findOne({ lobbyCode: req.query.lobbyCode })
     .then((lobbyFound) => {
