@@ -13,6 +13,8 @@ function getFinalCode(req, res) {
       lobbyFound.players.forEach((player) => {
         if (player.id == req.query.id) {
           res.status(200).send({ message: 'finalCode', finalCode: player.finalCode });
+        } else {
+          console.log('Este jugador no corresponde: ', player.name);
         }
       });
     })
