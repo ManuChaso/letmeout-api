@@ -136,4 +136,4 @@ server.listen(PORT, () => {
   console.log('Server deployed on port', PORT);
 });
 
-//startIanasBot();
+startIanasBot();
