@@ -133,7 +133,7 @@ server.on('upgrade', (request, client, head) => {
 });
 
 server.listen(3000, () => {
-  console.log('Server deployed on port', PORT);
+  console.log('Server deployed on port 3000');
 });
 
 // startIanasBot();
