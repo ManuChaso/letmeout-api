@@ -26,11 +26,12 @@ client.on('interactionCreate', async (interaction) => {
     case 'lobbys':
       getLobbys()
         .then((lobbys) => {
+          const shortLobbys = lobbys.slice(0, 25);
           const embed = new EmbedBuilder()
             .setTitle('Lista de lobbys')
             .setColor('#0099ff')
             .setFields(
-              lobbys.map(
+              shortLobbys.map(
                 (lobby) => lobby && { name: `LobbyCode: ${lobby.lobbyCode}`, value: `Creator: ${lobby.creator}` }
               )
             );
