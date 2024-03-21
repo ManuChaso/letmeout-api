@@ -1,7 +1,7 @@
 const lobbyModel = require('../models/lobby');
 
 function getFinalCode(req, res) {
-  const id = decodeURIComponent(req.query.id);
+  const id = decodeURIComponent(req.query.id).toUpperCase();
   const lobbyCode = req.query.lobbyCode;
 
   console.log(lobbyCode);
