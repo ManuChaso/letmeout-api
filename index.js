@@ -25,7 +25,7 @@ const { startIanasBot } = require('./IanasBot/ianasBot.js');
 const { rankingSave, getRankings } = require('./controllers/rankingController.js');
 const { getFinalCode } = require('./controllers/finalCodeController.js');
 
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 
 const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
 // ! Personal DB
@@ -132,8 +132,8 @@ server.on('upgrade', (request, client, head) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log('Server deployed on port', PORT);
+server.listen(3000, () => {
+  console.log('Server deployed on port 3000');
 });
 
-//startIanasBot();
+startIanasBot();
