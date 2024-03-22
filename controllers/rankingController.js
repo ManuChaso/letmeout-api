@@ -1,9 +1,9 @@
-const { rankingModel } = require('../models/ranking.js');
+const rankingModel = require('../models/ranking.js');
 
 async function rankingSave(req, res) {
   try {
-    console.log(req.body);
     const data = req.body;
+    console.log(req);
     const createRanking = new rankingModel({
       teamName: data.teamName,
       teamTime: data.teamTime,

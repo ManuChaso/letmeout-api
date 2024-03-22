@@ -25,6 +25,7 @@ const { imageGenerator } = require('./imageGenerator/imageGenerator.js');
 const { startIanasBot } = require('./IanasBot/ianasBot.js');
 const { rankingSave, getRankings } = require('./controllers/rankingController.js');
 const { getFinalCode } = require('./controllers/finalCodeController.js');
+const { storeData } = require('./storeData/storeData.js');
 
 // const PORT = process.env.PORT || 3000;
 
@@ -52,6 +53,7 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/save-ranking', (req, res) => rankingSave(req, res));
 app.get('/get-ranking', (req, res) => getRankings(req, res));
 app.get('/final-code', (req, res) => getFinalCode(req, res));
+app.post('/store-data', (req, res) => storeData(req, res));
 
 ws.on('connection', (client) => {
   console.log('✔ Client connected');

@@ -1,7 +1,8 @@
-const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const Discord = require('discord.js');
 const { getLobbys, getLobby } = require('../utils/utils');
 
-const { lobbysList, lobbyInfo } = require('./botCommands.js');
+const { lobbysList, lobbyInfo, gameData } = require('./botCommands.js');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
@@ -15,6 +16,8 @@ client.on('ready', async () => {
   console.log(`Comando de barra "${LobbysCommand.name}" registrado.`);
   const lobbyCommand = await client.application?.commands.create(lobbyInfo);
   console.log(`Comando de barra "${lobbyCommand.name}" registrado.`);
+  const dataCommand = await client.application?.commands.create(gameData);
+  console.log(`Comando de barra "${dataCommand.name}" registrado.`);
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -56,6 +59,13 @@ client.on('interactionCreate', async (interaction) => {
         .catch((err) => console.log('Error al mostrar info del lobby: ', err));
 
       break;
+
+    case 'gameData':
+      const attachment = AttachmentBuilder('storeData/data.csv', { name: 'Data.csv' });
+      interaction.reply({
+        content: 'Aqui tienes tu archivo Jeni',
+        files: [{ attachment }],
+      });
   }
 });
 
