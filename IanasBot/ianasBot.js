@@ -63,7 +63,7 @@ client.on('interactionCreate', async (interaction) => {
     case 'gameData':
       const attachment = AttachmentBuilder('storeData/data.csv', { name: 'Data.csv' });
       interaction.reply({
-        content: 'Aqui tienes tu archivo Jeni',
+        content: 'Aqui tienes tu archivo Jeni 👍',
         files: [{ attachment }],
       });
   }
