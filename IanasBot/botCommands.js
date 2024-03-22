@@ -15,8 +15,13 @@ const lobbyInfo = {
     },
   ],
 };
+const gameData = {
+  name: 'gamedata',
+  description: 'Show active lobbys',
+};
 
 module.exports = {
   lobbysList,
   lobbyInfo,
+  gameData,
 };
