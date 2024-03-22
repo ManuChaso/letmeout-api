@@ -15,7 +15,7 @@ async function rankingSave(req, res) {
       .save()
       .then((rankingSaved) => {
         console.log(rankingSaved);
-        res.status(200).send('Ranking guardado correctamente');
+        res.status(200).send('Ranking saved');
       })
       .catch((err) => {
         console.log('Error al guardar ranking', err);
