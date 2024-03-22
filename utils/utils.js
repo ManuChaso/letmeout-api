@@ -286,7 +286,7 @@ function chatMessage(data) {
 }
 
 function assignRoom(data) {
-  const rooms = ['r1', 'r2', 'r3'];
+  const rooms = ['bathroom', 'kitchen', 'living'];
 
   return new Promise((resolve, reject) => {
     lobbyModel
@@ -301,7 +301,7 @@ function assignRoom(data) {
         });
 
         lobbyModel
-          .findByIdAndUpdate({ lobbyCode: data.lobbyCode }, { $set: { players: players } }, { new: true })
+          .findOneAndUpdate({ lobbyCode: data.lobbyCode }, { $set: { players: players } }, { new: true })
           .then((lobbyUpdated) => {
             console.log('Lobby updated with rooms: ', lobbyUpdated);
 
@@ -371,11 +371,29 @@ function checkFinalCode(data, client) {
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         if (lobbyFound.finalCode == data.message) {
-          const res = {
-            tag: 'checkExit',
-            message: 'Congratulations, you win the game',
-            win: true,
-          };
+          const newPlayers = lobbyFound.players.map((player) =>
+            player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
+          );
+
+          lobbyModel
+            .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
+            .then((lobbyUpdated) => {
+              const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
+
+              if (win) {
+                const res = {
+                  tag: 'checkExit',
+                  message: 'Congratulations, you win the game',
+                  win: true,
+                };
+                resolve(res);
+              }
+            });
+          // const res = {
+          //   tag: 'checkExit',
+          //   message: 'Congratulations, you win the game',
+          //   win: true,
+          // };
 
           resolve(res);
         } else {
