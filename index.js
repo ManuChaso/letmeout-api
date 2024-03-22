@@ -19,6 +19,7 @@ const {
   shareTime,
   checkFinalCode,
   generateFinalCode,
+  lose,
 } = require('./utils/utils.js');
 const { imageGenerator } = require('./imageGenerator/imageGenerator.js');
 const { startIanasBot } = require('./IanasBot/ianasBot.js');
@@ -111,6 +112,10 @@ ws.on('connection', (client) => {
         checkFinalCode(access, client)
           .then((res) => sendMessage(res, client, ws))
           .catch((err) => console.log('Error checking final code', err));
+        break;
+
+      case 'lose':
+        lose().then((res) => sendMessage(res, client, ws));
         break;
 
       default:

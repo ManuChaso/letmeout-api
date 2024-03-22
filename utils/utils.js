@@ -389,13 +389,6 @@ function checkFinalCode(data, client) {
                 resolve(res);
               }
             });
-          // const res = {
-          //   tag: 'checkExit',
-          //   message: 'Congratulations, you win the game',
-          //   win: true,
-          // };
-
-          resolve(res);
         } else {
           const res = {
             tag: 'checkExit',
@@ -412,6 +405,15 @@ function checkFinalCode(data, client) {
   });
 }
 
+function lose(client) {
+  return new Promise((resolve, reject) => {
+    const res = {
+      tag: 'lose',
+    };
+    resolve(res);
+  });
+}
+
 module.exports = {
   getLobbys,
   getLobby,
@@ -425,4 +427,5 @@ module.exports = {
   shareTime,
   checkFinalCode,
   generateFinalCode,
+  lose,
 };
