@@ -314,7 +314,7 @@ function assignRoom(data) {
             resolve(res);
           })
           .catch((err) => {
-            console.error('Error assigning rooms: ', err);
+            console.error('Error  assigning rooms: ', err);
             reject(err);
           });
       })
