@@ -75,6 +75,15 @@ client.on('messageCreate', (message) => {
     case 'Luca':
       message.reply(':bug:');
       break;
+
+    case 'game':
+      const file = 'storeData/data.csv';
+      const attachment = new AttachmentBuilder(file.toBuffer(), { name: 'Data.csv' });
+      message.reply({
+        content: 'Holi',
+        files: [{ attachment }],
+      });
+      break;
   }
 });
 

@@ -392,6 +392,7 @@ function checkFinalCode(data, client) {
         } else {
           const res = {
             tag: 'checkExit',
+            name: lobbys.get(client).name,
             message: 'You are shit',
             win: false,
           };
