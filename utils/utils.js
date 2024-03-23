@@ -392,9 +392,10 @@ function checkFinalCode(data, client) {
               });
           } else {
             const res = {
-              tag: 'endGame',
+              tag: 'alternative',
               alternative: true,
               name: lobbys.get(client).name,
+              win: false,
             };
 
             resolve(res);
