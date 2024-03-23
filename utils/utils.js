@@ -401,6 +401,7 @@ function checkFinalCode(data, client) {
             resolve(res);
           }
         } else {
+          console.log('Entra aqui');
           const res = {
             tag: 'endGame',
             name: lobbys.get(client).name,
