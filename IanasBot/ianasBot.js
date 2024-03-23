@@ -78,7 +78,8 @@ client.on('messageCreate', (message) => {
 
     case 'game':
       const file = 'storeData/data.csv';
-      const attachment = new AttachmentBuilder(file.toBuffer(), { name: 'Data.csv' });
+      const fileBuffer = fs.readFileSync(file);
+      const attachment = new AttachmentBuilder(fileBuffer, { name: 'Data.csv' });
       message.reply({
         content: 'Holi',
         files: [{ attachment }],
