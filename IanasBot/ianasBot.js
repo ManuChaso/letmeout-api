@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const Discord = require('discord.js');
 const { getLobbys, getLobby } = require('../utils/utils');
+const fs = require('fs');
 
 const { lobbysList, lobbyInfo, gameData } = require('./botCommands.js');
 
@@ -60,11 +61,10 @@ client.on('interactionCreate', async (interaction) => {
 
       break;
 
-    case 'gameData':
-      const attachment = AttachmentBuilder('storeData/data.csv', { name: 'Data.csv' });
-      interaction.reply({
+    case 'gamedata':
+      await interaction.reply({
         content: 'Aqui tienes tu archivo Jeni 👍',
-        files: [{ attachment }],
+        files: ['storeData/data.csv'],
       });
   }
 });
@@ -74,15 +74,6 @@ client.on('messageCreate', (message) => {
   switch (message.content) {
     case 'Luca':
       message.reply(':bug:');
-      break;
-
-    case 'game':
-      const file = 'storeData/data.csv';
-      const attachment = new AttachmentBuilder(file.toBuffer(), { name: 'Data.csv' });
-      message.reply({
-        content: 'Holi',
-        files: [{ attachment }],
-      });
       break;
   }
 });
