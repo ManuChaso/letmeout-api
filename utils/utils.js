@@ -76,6 +76,7 @@ function createLobby(data, client) {
           finalCode: Math.floor(Math.random() * 10),
           finalState: false,
           room: '',
+          time: '',
         },
       ],
       finalCode: '',
@@ -129,6 +130,7 @@ function joinLobby(data, client) {
                       finalCode: Math.floor(Math.random() * 10),
                       finalState: false,
                       room: '',
+                      time: '',
                     },
                   },
                 },
@@ -418,6 +420,37 @@ function checkFinalCode(data, client) {
   });
 }
 
+function setPlayerTime(data, client) {
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
+      .then((lobbyFound) => {
+        const newPlayers = lobbyFound.players.map((player) =>
+          player.name == lobbys.get(client).name ? { ...player, time: data.time } : player
+        );
+
+        lobbyModel
+          .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
+          .then((lobbyUpdated) => {
+            console.log(lobbyUpdated);
+            const res = {
+              tag: 'playerTime',
+              done: true,
+            };
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log('Error updating player time', err);
+            reject(err);
+          });
+      })
+      .catch((err) => {
+        console.error('Lobby not found', err);
+        reject(err);
+      });
+  });
+}
+
 function lose() {
   return new Promise((resolve, reject) => {
     const res = {
@@ -441,4 +474,5 @@ module.exports = {
   checkFinalCode,
   generateFinalCode,
   lose,
+  setPlayerTime,
 };
