@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -8,34 +10,16 @@ const app = express();
 const server = http.createServer(app);
 const ws = new WebSocket.Server({ noServer: true });
 
-const {
-  createLobby,
-  joinLobby,
-  exitLobby,
-  playerState,
-  sendMessage,
-  chatMessage,
-  assignRoom,
-  shareTime,
-  checkFinalCode,
-  generateFinalCode,
-  lose,
-} = require('./utils/utils.js');
-const { imageGenerator } = require('./imageGenerator/imageGenerator.js');
 const { startIanasBot } = require('./IanasBot/ianasBot.js');
 const { rankingSave, getRankings } = require('./controllers/rankingController.js');
 const { getFinalCode } = require('./controllers/finalCodeController.js');
 const { storeData } = require('./storeData/storeData.js');
-
-// const PORT = process.env.PORT || 3000;
-
-const mongoUrl = 'mongodb+srv://LucaJeniManu:LucaJeniManu@testlobby.rsilvu4.mongodb.net/?retryWrites=true&w=majority';
-// ! Personal DB
-//const mongoUrl = 'mongodb+srv://Leyinko:gjxyWCTbkIMAhOEE@letmeout.jm5y27d.mongodb.net/?retryWrites=true&w=majority';
+const { handleTag } = require('./utils/handleTags.js');
+const { exitLobby, sendMessage } = require('./utils/utils.js');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(mongoUrl);
+    await mongoose.connect(process.env.MONGO_URL);
     console.log('✔ MongoDB connected');
   } catch (err) {
     console.log('❌ Unable to connect to MongoDB', err);
@@ -61,69 +45,7 @@ ws.on('connection', (client) => {
   client.on('message', (message) => {
     const access = JSON.parse(message);
 
-    switch (access.tag) {
-      case 'createLobby':
-        createLobby(access, client)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise at creating lobby', err));
-        break;
-
-      case 'joinLobby':
-        joinLobby(access, client)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise at joining lobby', err));
-        break;
-
-      case 'exitLobby':
-        exitLobby(client)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.error('Error in promise at leaving lobby', err));
-        break;
-
-      case 'playerState':
-        playerState(access)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error in promise at updating player state', err));
-        break;
-
-      case 'chatMessage':
-        const res = chatMessage(access);
-        sendMessage(res, client, ws);
-        break;
-
-      case 'assignRoom':
-        assignRoom(access)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error assigning rooms', err));
-        break;
-
-      case 'shareTime':
-        const response = shareTime(access);
-        sendMessage(response, client, ws);
-        break;
-
-      case 'generateAccessCard':
-        imageGenerator(access).then((res) => client.send(res));
-        break;
-
-      case 'generateFinalCode':
-        generateFinalCode(client);
-        break;
-
-      case 'checkFinalCode':
-        checkFinalCode(access, client)
-          .then((res) => sendMessage(res, client, ws))
-          .catch((err) => console.log('Error checking final code', err));
-        break;
-
-      case 'lose':
-        lose().then((res) => sendMessage(res, client, ws));
-        break;
-
-      default:
-        console.log('No action (tag) defined on action');
-        break;
-    }
+    handleTag(access, client, ws);
   });
 
   client.on('close', () => {
@@ -139,8 +61,8 @@ server.on('upgrade', (request, client, head) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('Server deployed on port 3000');
+server.listen(process.env.PORT, () => {
+  console.log('Server deployed on port ', process.env.PORT);
 });
 
 startIanasBot();
