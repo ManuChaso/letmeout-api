@@ -339,7 +339,7 @@ function shareTime(data) {
 
 function generateId() {
   const firstId = randomstring.generate({ length: 4, charset: 'numeric' });
-  const secondId = randomstring.generate({ length: 2, charset: 'alphabetic' });
+  const secondId = randomstring.generate({ length: 2, charset: 'alphabetic', capitalization: 'uppercase' });
   const thirdId = randomstring.generate({ length: 2, charset: 'numeric' });
 
   return `#${firstId}-${secondId}-${thirdId}`;
