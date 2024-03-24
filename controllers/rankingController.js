@@ -45,7 +45,7 @@ async function getRankings(req, res) {
         res.status(200).send({ message: 'ranking: ', ranking: rankings });
       })
       .catch((err) => {
-        console.log('Error al obtener el ranking', err);
+        console.log('Ranking not found', err);
         res.status(500).send('Error al obtener el ranking');
       });
   } catch (err) {
