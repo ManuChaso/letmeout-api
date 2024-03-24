@@ -10,6 +10,7 @@ const {
   checkFinalCode,
   generateFinalCode,
   lose,
+  setPlayerTime,
 } = require('./utils.js');
 
 function handleTag(data, client, ws) {
@@ -66,6 +67,10 @@ function handleTag(data, client, ws) {
       checkFinalCode(data, client)
         .then((res) => sendMessage(res, client, ws))
         .catch((err) => console.log('Error checking final code', err));
+      break;
+
+    case 'setPlayerTime':
+      setPlayerTime().then((res) => client.send(res));
       break;
 
     case 'lose':
