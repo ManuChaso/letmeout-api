@@ -38,6 +38,9 @@ app.post('/save-ranking', (req, res) => rankingSave(req, res));
 app.get('/get-ranking', (req, res) => getRankings(req, res));
 app.get('/final-code', (req, res) => getFinalCode(req, res));
 app.post('/store-data', (req, res) => storeData(req, res));
+app.get('/lobby-image', (req, res) => {
+  res.sendFile('root/letmeout/letmeout-api/assets/Lobby.png');
+});
 
 ws.on('connection', (client) => {
   console.log('✔ Client connected');
