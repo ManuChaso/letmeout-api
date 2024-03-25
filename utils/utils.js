@@ -381,7 +381,7 @@ function checkFinalCode(data, client) {
             .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
             .then((lobbyUpdated) => {
               console.log(lobbyUpdated);
-              const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
+              const win = lobbyUpdated.players.map((player) => player.finalState).every(Boolean);
 
               console.log(win);
 
