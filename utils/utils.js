@@ -424,7 +424,7 @@ function setPlayerTime(data, client) {
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         const newPlayers = lobbyFound.players.map((player) =>
-          player.name == lobbys.get(client).name ? { ...player, time: data.time } : player
+          player.name == lobbys.get(client).name ? { ...player, time: data.message } : player
         );
 
         lobbyModel
