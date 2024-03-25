@@ -372,7 +372,7 @@ function checkFinalCode(data, client) {
     lobbyModel
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
-        if (lobbyFound.finalCode == data.message) {
+        if (lobbyFound.finalCode == data.message && data.reboot) {
           const newPlayers = lobbyFound.players.map((player) =>
             player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
           );
@@ -380,7 +380,10 @@ function checkFinalCode(data, client) {
           lobbyModel
             .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
             .then((lobbyUpdated) => {
+              console.log(lobbyUpdated);
               const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
+
+              console.log(win);
 
               if (win) {
                 const res = {
@@ -389,9 +392,11 @@ function checkFinalCode(data, client) {
                   win: true,
                 };
                 resolve(res);
+              } else {
+                console.log('No estan todos en true');
               }
             });
-        } else if (data.message.toLowerCase() == 'letmeout') {
+        } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
           const res = {
             tag: 'endGame',
             alternative: true,
