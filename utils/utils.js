@@ -373,35 +373,33 @@ function checkFinalCode(data, client) {
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         if (lobbyFound.finalCode == data.message) {
-          if (data.reboot) {
-            const newPlayers = lobbyFound.players.map((player) =>
-              player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
-            );
+          const newPlayers = lobbyFound.players.map((player) =>
+            player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
+          );
 
-            lobbyModel
-              .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
-              .then((lobbyUpdated) => {
-                const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
+          lobbyModel
+            .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
+            .then((lobbyUpdated) => {
+              const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
 
-                if (win) {
-                  const res = {
-                    tag: 'endGame',
-                    message: 'Congratulations, you win the game',
-                    win: true,
-                  };
-                  resolve(res);
-                }
-              });
-          } else {
-            const res = {
-              tag: 'endGame',
-              alternative: true,
-              name: lobbys.get(client).name,
-              win: false,
-            };
+              if (win) {
+                const res = {
+                  tag: 'endGame',
+                  message: 'Congratulations, you win the game',
+                  win: true,
+                };
+                resolve(res);
+              }
+            });
+        } else if (data.message.toLowerCase() == 'letmeout') {
+          const res = {
+            tag: 'endGame',
+            alternative: true,
+            name: lobbys.get(client).name,
+            win: false,
+          };
 
-            resolve(res);
-          }
+          resolve(res);
         } else {
           console.log('Entra aqui');
           const res = {

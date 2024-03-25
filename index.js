@@ -38,8 +38,15 @@ app.post('/save-ranking', (req, res) => rankingSave(req, res));
 app.get('/get-ranking', (req, res) => getRankings(req, res));
 app.get('/final-code', (req, res) => getFinalCode(req, res));
 app.post('/store-data', (req, res) => storeData(req, res));
-app.get('/lobby-image', (req, res) => {
-  res.sendFile('root/letmeout/letmeout-api/assets/Lobby.png');
+
+app.get('/access-game', (req, res) => {
+  const pass = req.query.pass;
+
+  if ((pass.toUpperCase() = process.env.GAME_ACCESS.toUpperCase())) {
+    res.status(200).send({ message: 'Granted', access: true });
+  } else {
+    res.status(500).send({ message: 'Denied', access: false });
+  }
 });
 
 ws.on('connection', (client) => {
