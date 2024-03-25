@@ -374,7 +374,7 @@ function checkFinalCode(data, client) {
       .then((lobbyFound) => {
         if (lobbyFound.finalCode == data.message && data.reboot) {
           const newPlayers = lobbyFound.players.map((player) =>
-            player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
+            player.name === lobbys.get(client).name ? { ...player, finalState: true } : player
           );
 
           lobbyModel
