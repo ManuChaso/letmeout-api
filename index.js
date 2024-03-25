@@ -42,7 +42,7 @@ app.post('/store-data', (req, res) => storeData(req, res));
 app.get('/access-game', (req, res) => {
   const pass = req.query.pass;
 
-  if ((pass.toUpperCase() = process.env.GAME_ACCESS.toUpperCase())) {
+  if (pass.toUpperCase() == process.env.GAME_ACCESS.toUpperCase()) {
     res.status(200).send({ message: 'Granted', access: true });
   } else {
     res.status(500).send({ message: 'Denied', access: false });
