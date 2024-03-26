@@ -274,7 +274,7 @@ function chatMessage(data) {
 
     message.forEach((word) => {
       for (let i = 0; i < 3; i++) {
-        if (f1KeyWords[i].includes(word)) {
+        if (f1KeyWords[i].includes(word.toLowerCase())) {
           i == 0 && (resMessage.ticket = 'bathroom');
           i == 1 && (resMessage.ticket = 'kitchen');
           i == 2 && (resMessage.ticket = 'living');
