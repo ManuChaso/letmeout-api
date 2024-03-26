@@ -274,7 +274,7 @@ function chatMessage(data) {
 
     message.forEach((word) => {
       for (let i = 0; i < 3; i++) {
-        if (f1KeyWords[i].includes(word)) {
+        if (f1KeyWords[i].includes(word.toLowerCase())) {
           i == 0 && (resMessage.ticket = 'bathroom');
           i == 1 && (resMessage.ticket = 'kitchen');
           i == 2 && (resMessage.ticket = 'living');
@@ -372,36 +372,46 @@ function checkFinalCode(data, client) {
     lobbyModel
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
-        if (lobbyFound.finalCode == data.message) {
-          if (data.reboot) {
-            const newPlayers = lobbyFound.players.map((player) =>
-              player.name === lobbys.get(client).name ? { ...player, playerState: true } : player
-            );
+        if (lobbyFound.finalCode == data.message && data.reboot) {
+          const newPlayers = lobbyFound.players.map((player) =>
+            player.name === lobbys.get(client).name ? { ...player, finalState: true } : player
+          );
 
-            lobbyModel
-              .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
-              .then((lobbyUpdated) => {
-                const win = lobbyFound.players.map((player) => player.finalState).every(Boolean);
+          lobbyModel
+            .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
+            .then((lobbyUpdated) => {
+              console.log(lobbyUpdated);
+              const win = lobbyUpdated.players.map((player) => player.finalState).every(Boolean);
 
-                if (win) {
-                  const res = {
-                    tag: 'endGame',
-                    message: 'Congratulations, you win the game',
-                    win: true,
-                  };
-                  resolve(res);
-                }
-              });
-          } else {
-            const res = {
-              tag: 'endGame',
-              alternative: true,
-              name: lobbys.get(client).name,
-              win: false,
-            };
+              console.log(win);
 
-            resolve(res);
-          }
+              if (win) {
+                const res = {
+                  tag: 'endGame',
+                  message: 'Congratulations, you win the game',
+                  win: true,
+                };
+                resolve(res);
+              } else {
+                const playersFinished = lobbyUpdated.players.map(
+                  (player) => player.finalState && { player: player.name, access: player.finalState }
+                );
+                res = {
+                  tag: 'endGame',
+                  message: 'Waiting for the other players',
+                  access: playersFinished,
+                };
+              }
+            });
+        } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
+          const res = {
+            tag: 'endGame',
+            alternative: true,
+            name: lobbys.get(client).name,
+            win: false,
+          };
+
+          resolve(res);
         } else {
           console.log('Entra aqui');
           const res = {
@@ -426,7 +436,7 @@ function setPlayerTime(data, client) {
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         const newPlayers = lobbyFound.players.map((player) =>
-          player.name == lobbys.get(client).name ? { ...player, time: data.time } : player
+          player.name == lobbys.get(client).name ? { ...player, time: data.message } : player
         );
 
         lobbyModel

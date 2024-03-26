@@ -12,8 +12,8 @@ async function rankingSave(req, res) {
       const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
       const createRanking = new rankingModel({
         teamName: teamName,
-        teamTime: teamTime / 3,
-        teamScore: `${teamTime / 3}pts`,
+        teamTime: teamTime,
+        teamScore: `${teamTime}pts`,
         players: [
           { name: lobbyFound.players[0].name, time: lobbyFound.players[0].time },
           { name: lobbyFound.players[1].name, time: lobbyFound.players[1].time },
@@ -45,7 +45,7 @@ async function getRankings(req, res) {
         res.status(200).send({ message: 'ranking: ', ranking: rankings });
       })
       .catch((err) => {
-        console.log('Error al obtener el ranking', err);
+        console.log('Ranking not found', err);
         res.status(500).send('Error al obtener el ranking');
       });
   } catch (err) {
