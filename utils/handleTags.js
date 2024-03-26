@@ -70,7 +70,7 @@ function handleTag(data, client, ws) {
       break;
 
     case 'setPlayerTime':
-      setPlayerTime(data, client).then((res) => client.send('Tiempo guardado'));
+      setPlayerTime(data, client).then((res) => console.log('Time saved'));
       break;
 
     case 'lose':
