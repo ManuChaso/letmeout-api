@@ -394,7 +394,7 @@ function checkFinalCode(data, client) {
                 resolve(res);
               } else {
                 const playersFinished = lobbyUpdated.players.map(
-                  (player) => player.finalState && { player: player.name, access: player.finalState }
+                  (player) => player.finalState && { player: player.id, access: player.finalState }
                 );
                 res = {
                   tag: 'endGame',
