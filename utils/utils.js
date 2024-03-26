@@ -393,7 +393,14 @@ function checkFinalCode(data, client) {
                 };
                 resolve(res);
               } else {
-                console.log('No estan todos en true');
+                const playersFinished = lobbyUpdated.players.map(
+                  (player) => player.finalState && { player: player.name, access: player.finalState }
+                );
+                res = {
+                  tag: 'endGame',
+                  message: 'Waiting for the other players',
+                  access: playersFinished,
+                };
               }
             });
         } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
