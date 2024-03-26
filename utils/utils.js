@@ -381,27 +381,17 @@ function checkFinalCode(data, client) {
             .findOneAndUpdate({ lobbyCode: lobbyFound.lobbyCode }, { players: newPlayers }, { new: true })
             .then((lobbyUpdated) => {
               console.log(lobbyUpdated);
-              const win = lobbyUpdated.players.map((player) => player.finalState).every(Boolean);
 
-              console.log(win);
-
-              if (win) {
-                const res = {
-                  tag: 'endGame',
-                  message: 'Congratulations, you win the game',
-                  win: true,
-                };
-                resolve(res);
-              } else {
-                const playersFinished = lobbyUpdated.players.map(
-                  (player) => player.finalState && { player: player.id, access: player.finalState }
-                );
-                res = {
-                  tag: 'endGame',
-                  message: 'Waiting for the other players',
-                  access: playersFinished,
-                };
-              }
+              const playersFinished = lobbyUpdated.players.map(
+                (player) => player.finalState && { player: player.id, access: player.finalState }
+              );
+              const res = {
+                tag: 'endGame',
+                message: 'Waiting for the other players',
+                access: playersFinished,
+                name: lobbys.get(client).name,
+              };
+              resolve(res);
             });
         } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
           const res = {
