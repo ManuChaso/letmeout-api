@@ -382,9 +382,10 @@ function checkFinalCode(data, client) {
             .then((lobbyUpdated) => {
               console.log(lobbyUpdated);
 
-              const playersFinished = lobbyUpdated.players.map(
-                (player) => player.finalState && { player: player.id, access: player.finalState }
-              );
+              const playersFinished = lobbyUpdated.players.map((player) => ({
+                player: player.id,
+                access: player.finalState,
+              }));
               const res = {
                 tag: 'endGame',
                 message: 'Waiting for the other players',

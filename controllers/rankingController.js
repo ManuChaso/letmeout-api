@@ -14,11 +14,7 @@ async function rankingSave(req, res) {
         teamName: teamName,
         teamTime: teamTime,
         teamScore: `${teamTime}pts`,
-        players: [
-          { name: lobbyFound.players[0].name, time: lobbyFound.players[0].time },
-          { name: lobbyFound.players[1].name, time: lobbyFound.players[1].time },
-          { name: lobbyFound.players[2].name, time: lobbyFound.players[2].time },
-        ],
+        players: lobbyFound.players.map((player) => ({ name: player.name, time: player.time })),
       });
 
       createRanking
