@@ -15,7 +15,7 @@ const { rankingSave, getRankings } = require('./controllers/rankingController.js
 const { getFinalCode } = require('./controllers/finalCodeController.js');
 const { storeData } = require('./storeData/storeData.js');
 const { handleTag } = require('./utils/handleTags.js');
-const { exitLobby, sendMessage } = require('./utils/utils.js');
+const { exitLobby, sendMessage, lose } = require('./utils/utils.js');
 
 const connectDB = async () => {
   try {
@@ -59,6 +59,7 @@ ws.on('connection', (client) => {
   });
 
   client.on('close', () => {
+    lose().then((res) => sendMessage(res, client, ws));
     exitLobby(client)
       .then((res) => sendMessage(res, client, ws))
       .catch((err) => console.log('Error leaving the lobby', err));

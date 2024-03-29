@@ -394,7 +394,7 @@ function checkFinalCode(data, client) {
               };
               resolve(res);
             });
-        } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
+        } else if (data.message.toLowerCase() == `letmeout-${lobbyFound.finalCode}` && !data.reboot) {
           const res = {
             tag: 'endGame',
             alternative: true,
