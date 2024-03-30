@@ -5,7 +5,7 @@ const lobbys = new Map();
 
 const f1KeyWords = [
   ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets'], //bathroom
-  ['naranjas', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
+  ['naranjas', 'naranja', 'orange', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
   ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
 ];
 
@@ -112,7 +112,7 @@ function createLobby(data, client) {
 function joinLobby(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
-      .findOne({ lobbyCode: data.lobbyCode })
+      .findOne({ lobbyCode: data.lobbyCode.toUpperCase() })
       .then((lobbyFound) => {
         if (lobbyFound.players.length < 3) {
           const nameInUse = lobbyFound.players.find((player) => player.name == data.name);
