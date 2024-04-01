@@ -13,14 +13,13 @@ function writeInCSV(CSVData, fileName, res) {
       console.error('Error al escribir los datos en el archivo', err);
     } else {
       console.log('Datos escritos en el archivo correctamente');
-      res.status(200).send({ message: 'Datos escritos en el archivo correctamente' });
     }
   });
 }
 
-function storeData(req, res) {
-  console.log(req.body);
-  const CSVFile = convertToCSV(req.body);
+function storeData(data) {
+  console.log(data);
+  const CSVFile = convertToCSV(data);
   writeInCSV(CSVFile, 'storeData/data.csv', res);
 }
 

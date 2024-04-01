@@ -9,6 +9,29 @@ const f1KeyWords = [
   ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
 ];
 
+const randomDates = [
+  'March 15, 1993',
+  'November 5, 1992',
+  'September 22, 1995',
+  'May 8, 1994',
+  'February 19, 1996',
+  'July 10, 1993',
+  'April 3, 1992',
+  'October 30, 1991',
+  'August 14, 1996',
+  'December 27, 1994',
+  'June 18, 1992',
+  'January 7, 1995',
+  'September 5, 1993',
+  'March 28, 1996',
+  'November 20, 1991',
+  'July 1, 1994',
+  'February 11, 1992',
+  'October 16, 1995',
+  'May 29, 1993',
+  'December 11, 1996',
+];
+
 function sendMessage(res, client, ws) {
   if (lobbys.has(client)) {
     const user = lobbys.get(client);
@@ -120,7 +143,7 @@ function joinLobby(data, client) {
           if (!nameInUse) {
             lobbyModel
               .findOneAndUpdate(
-                { lobbyCode: data.lobbyCode },
+                { lobbyCode: lobbyFound.lobbyCode },
                 {
                   $push: {
                     players: {
@@ -311,6 +334,7 @@ function assignRoom(data) {
               tag: 'assignRoom',
               lobbyCode: lobbyUpdated.lobbyCode,
               players: lobbyUpdated.players,
+              date: randomDates[Math.floor(Math.random() * randomDates.length)],
             };
 
             resolve(res);

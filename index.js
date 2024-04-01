@@ -16,7 +16,7 @@ const { getFinalCode } = require('./controllers/finalCodeController.js');
 const { storeData } = require('./storeData/storeData.js');
 const { handleTag } = require('./utils/handleTags.js');
 const { exitLobby, sendMessage, lose } = require('./utils/utils.js');
-
+const gameData = require('./controllers/gameDataController.js');
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL);
@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/save-ranking', (req, res) => rankingSave(req, res));
 app.get('/get-ranking', (req, res) => getRankings(req, res));
 app.get('/final-code', (req, res) => getFinalCode(req, res));
-app.post('/store-data', (req, res) => storeData(req, res));
+app.post('/game-data', (req, res) => gameData(req, res));
 
 app.get('/access-game', (req, res) => {
   const pass = req.query.pass;

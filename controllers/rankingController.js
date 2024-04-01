@@ -7,7 +7,7 @@ async function rankingSave(req, res) {
   lobbyModel
     .findOne({ lobbyCode: data.lobbyCode })
     .then((lobbyFound) => {
-      const teamName = lobbyFound.players.map((player) => player.name.substring(0, 2)).join('-');
+      const teamName = lobbyFound.players.map((player) => player.name.substring(0, 1)).join('');
       const timeArray = lobbyFound.players.map((player) => player.time);
       const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
       const createRanking = new rankingModel({

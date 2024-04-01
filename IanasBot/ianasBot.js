@@ -1,9 +1,9 @@
 const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const Discord = require('discord.js');
 const { getLobbys, getLobby } = require('../utils/utils');
-const fs = require('fs');
 
 const { lobbysList, lobbyInfo, gameData } = require('./botCommands.js');
+
+const channelId = '1098336516369031208';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
@@ -78,8 +78,57 @@ client.on('messageCreate', (message) => {
   }
 });
 
+function sendGameData(data, res) {
+  const entries = Object.entries(data);
+  const embed = new EmbedBuilder()
+    .setTitle(`Datos del jugador: ${data.userName}`)
+    .setDescription('Letmeout Statistics')
+    .setColor('#90EE90')
+    .setFields(
+      { name: 'Total clicks', value: `${data.clicks}`, inline: true },
+      { name: 'Messages send', value: `${data.sent}`, inline: true },
+      { name: 'Messages received', value: `${data.received}`, inline: true },
+
+      { name: '\u200b', value: '\u200b' },
+
+      { name: 'Time on Stage 1', value: `${data.stage1}S`, inline: true },
+      { name: 'Time on Stage 2', value: `${data.stage2}S`, inline: true },
+      { name: 'Time on Stage 3', value: `${data.stage3}S`, inline: true },
+
+      { name: '\u200b', value: '\u200b' },
+
+      { name: 'Time on MemoryPath', value: `${data.minigames0}S`, inline: true },
+      { name: 'Time on NeuralLink', value: `${data.minigames1}S`, inline: true },
+      { name: 'Time on Smash', value: `${data.minigames2}S`, inline: true },
+
+      { name: '\u200b', value: '\u200b' },
+
+      { name: 'MemoryPath', value: `${data.games0} fails`, inline: true },
+      { name: 'NeuralLink', value: `${data.games1} fails`, inline: true },
+      { name: 'Smash', value: `${data.games2} fails`, inline: true },
+
+      { name: '\u200b', value: '\u200b' },
+
+      { name: '\u200b', value: '\u200b', inline: true },
+      { name: 'Total time', value: `${data.total}`, inline: true }
+    );
+
+  const channel = client.channels.cache.get(channelId);
+
+  if (channel) {
+    channel
+      .send({ embeds: [embed] })
+      .then(() => {
+        res.status(200).send('Data saved');
+      })
+      .catch((err) => console.log('Error sending message', err));
+  } else {
+    console.log('Channel not found');
+  }
+}
+
 function startIanasBot() {
   client.login('MTIxNDczMjE4NTkxNjAxODc0OQ.GUGsoN.7ytzhCN8U79RivYI9v25O9b-3Qyo6dKTZIMDZ8');
 }
 
-module.exports = { startIanasBot };
+module.exports = { startIanasBot, sendGameData };
