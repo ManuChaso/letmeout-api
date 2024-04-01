@@ -3,7 +3,7 @@ const { getLobbys, getLobby } = require('../utils/utils');
 
 const { lobbysList, lobbyInfo, gameData } = require('./botCommands.js');
 
-const channelId = '1098336516369031208';
+const channelId = '1223681352809975829';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
@@ -86,20 +86,20 @@ function sendGameData(data, res) {
     .setColor('#90EE90')
     .setFields(
       { name: 'Total clicks', value: `${data.clicks}`, inline: true },
-      { name: 'Messages send', value: `${data.sent}`, inline: true },
+      { name: 'Messages sent', value: `${data.sent}`, inline: true },
       { name: 'Messages received', value: `${data.received}`, inline: true },
 
       { name: '\u200b', value: '\u200b' },
 
-      { name: 'Time on Stage 1', value: `${data.stage1}S`, inline: true },
-      { name: 'Time on Stage 2', value: `${data.stage2}S`, inline: true },
-      { name: 'Time on Stage 3', value: `${data.stage3}S`, inline: true },
+      { name: 'Time on Stage 1', value: `${data.stage1}s`, inline: true },
+      { name: 'Time on Stage 2', value: `${data.stage2}s`, inline: true },
+      { name: 'Time on Stage 3', value: `${data.stage3}s`, inline: true },
 
       { name: '\u200b', value: '\u200b' },
 
-      { name: 'Time on MemoryPath', value: `${data.minigames0}S`, inline: true },
-      { name: 'Time on NeuralLink', value: `${data.minigames1}S`, inline: true },
-      { name: 'Time on Smash', value: `${data.minigames2}S`, inline: true },
+      { name: 'Time on MemoryPath', value: `${data.minigames0}s`, inline: true },
+      { name: 'Time on NeuralLink', value: `${data.minigames1}s`, inline: true },
+      { name: 'Time on Smash', value: `${data.minigames2}s`, inline: true },
 
       { name: '\u200b', value: '\u200b' },
 
@@ -109,7 +109,7 @@ function sendGameData(data, res) {
 
       { name: '\u200b', value: '\u200b' },
 
-      { name: '\u200b', value: '\u200b', inline: true },
+      { name: 'Hidden ending', value: `${data.alternative}`, inline: true },
       { name: 'Total time', value: `${data.total}`, inline: true }
     );
 
