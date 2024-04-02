@@ -14,14 +14,11 @@ function getFinalCode(req, res) {
       lobbyFound.players.forEach((player) => {
         if (player.id == id) {
           res.status(200).send({ message: 'finalCode', finalCode: player.finalCode });
-        } else {
-          res.status(404).send({ message: 'Wrong id' });
         }
       });
     })
     .catch((err) => {
       console.log('Error searching lobby', err);
-      res.status(500).send({ message: 'No se ha encontrado el lobby' });
     });
 }
 

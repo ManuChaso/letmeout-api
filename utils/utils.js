@@ -5,8 +5,31 @@ const lobbys = new Map();
 
 const f1KeyWords = [
   ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets'], //bathroom
-  ['naranjas', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
+  ['naranjas', 'naranja', 'orange', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
   ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
+];
+
+const randomDates = [
+  'March 15, 1993',
+  'November 5, 1992',
+  'September 22, 1995',
+  'May 8, 1994',
+  'February 19, 1996',
+  'July 10, 1993',
+  'April 3, 1992',
+  'October 30, 1991',
+  'August 14, 1996',
+  'December 27, 1994',
+  'June 18, 1992',
+  'January 7, 1995',
+  'September 5, 1993',
+  'March 28, 1996',
+  'November 20, 1991',
+  'July 1, 1994',
+  'February 11, 1992',
+  'October 16, 1995',
+  'May 29, 1993',
+  'December 11, 1996',
 ];
 
 function sendMessage(res, client, ws) {
@@ -112,7 +135,7 @@ function createLobby(data, client) {
 function joinLobby(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
-      .findOne({ lobbyCode: data.lobbyCode })
+      .findOne({ lobbyCode: data.lobbyCode.toUpperCase() })
       .then((lobbyFound) => {
         if (lobbyFound.players.length < 3) {
           const nameInUse = lobbyFound.players.find((player) => player.name == data.name);
@@ -120,7 +143,7 @@ function joinLobby(data, client) {
           if (!nameInUse) {
             lobbyModel
               .findOneAndUpdate(
-                { lobbyCode: data.lobbyCode },
+                { lobbyCode: lobbyFound.lobbyCode },
                 {
                   $push: {
                     players: {
@@ -311,6 +334,7 @@ function assignRoom(data) {
               tag: 'assignRoom',
               lobbyCode: lobbyUpdated.lobbyCode,
               players: lobbyUpdated.players,
+              date: randomDates[Math.floor(Math.random() * randomDates.length)],
             };
 
             resolve(res);
@@ -382,9 +406,10 @@ function checkFinalCode(data, client) {
             .then((lobbyUpdated) => {
               console.log(lobbyUpdated);
 
-              const playersFinished = lobbyUpdated.players.map(
-                (player) => player.finalState && { player: player.id, access: player.finalState }
-              );
+              const playersFinished = lobbyUpdated.players.map((player) => ({
+                player: player.id,
+                access: player.finalState,
+              }));
               const res = {
                 tag: 'endGame',
                 message: 'Waiting for the other players',
@@ -393,7 +418,7 @@ function checkFinalCode(data, client) {
               };
               resolve(res);
             });
-        } else if (data.message.toLowerCase() == 'letmeout' && !data.reboot) {
+        } else if (data.message.toLowerCase() == `letmeout-${lobbyFound.finalCode}` && !data.reboot) {
           const res = {
             tag: 'endGame',
             alternative: true,
