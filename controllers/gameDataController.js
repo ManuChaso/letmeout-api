@@ -21,7 +21,7 @@ function gameData(req, res) {
   });
 
   console.log(stats);
-  sendGameData(stats, res);
+  //sendGameData(stats, res);
 }
 
 module.exports = gameData;

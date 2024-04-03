@@ -16,6 +16,8 @@ async function rankingSave(req, res) {
         players: lobbyFound.players.map((player) => ({ name: player.name, time: player.time })),
       });
 
+      console.log(createRanking);
+
       createRanking
         .save()
         .then((rankingSaved) => {
