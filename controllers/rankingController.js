@@ -7,7 +7,10 @@ async function rankingSave(req, res) {
   lobbyModel
     .findOne({ lobbyCode: data.lobbyCode })
     .then((lobbyFound) => {
-      const teamName = lobbyFound.players.map((player) => player.name.substring(0, 1)).join('');
+      const teamName = lobbyFound.players
+        .map((player) => player.name.substring(0, 1))
+        .join('')
+        .toUpperCase();
       const timeArray = lobbyFound.players.map((player) => player.time);
       const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
       const createRanking = new rankingModel({
@@ -35,18 +38,13 @@ async function rankingSave(req, res) {
 
 async function getRankings(req, res) {
   try {
-    rankingModel
-      .find()
-      .then((rankings) => {
-        console.log('Rankings: ', rankings);
-        res.status(200).send({ message: 'ranking: ', ranking: rankings });
-      })
-      .catch((err) => {
-        console.log('Ranking not found', err);
-        res.status(500).send('Error al obtener el ranking');
-      });
+    const rankings = await rankingModel.find().sort({ teamScore: -1 }).limit(10);
+
+    console.log('Rankings: ', rankings);
+    res.status(200).send({ message: 'ranking: ', ranking: rankings });
   } catch (err) {
     console.log('Error al buscar rankings', err);
+    res.status(500).send('Error al obtener el ranking');
   }
 }
 
