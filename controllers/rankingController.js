@@ -12,10 +12,11 @@ async function rankingSave(req, res) {
       const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
       const createRanking = new rankingModel({
         teamName: teamName,
-        teamTime: teamTime,
         teamScore: `${teamTime}pts`,
         players: lobbyFound.players.map((player) => ({ name: player.name, time: player.time })),
       });
+
+      console.log(createRanking);
 
       createRanking
         .save()

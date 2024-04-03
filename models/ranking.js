@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const rankingSchema = new Schema({
   teamName: String,
-  teamTime: String,
   teamScore: String,
   players: [],
 });

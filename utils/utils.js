@@ -374,9 +374,9 @@ function generateFinalCode(client) {
     lobbyModel
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
-        let finalCode = '';
+        const code = lobbyFound.players.map((player) => player.finalCode.toString());
 
-        lobbyFound.players.forEach((player) => (finalCode += player.finalCode.toString()));
+        const finalCode = shuffleCode(code);
 
         console.log(finalCode);
 
@@ -388,6 +388,17 @@ function generateFinalCode(client) {
       .catch((err) => {
         console.log('Error generating final code', err);
       });
+
+    const shuffleCode = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+
+      return array.join('');
+    };
   });
 }
 
