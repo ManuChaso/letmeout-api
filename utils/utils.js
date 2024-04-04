@@ -4,8 +4,8 @@ const randomstring = require('randomstring');
 const lobbys = new Map();
 
 const f1KeyWords = [
-  ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets'], //bathroom
-  ['naranjas', 'naranja', 'orange', 'oranges', 'cesta', 'basket', 'lemon', 'limon'], //kitchen
+  ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets', 'fregadero', 'baño'], //bathroom
+  ['naranjas', 'naranja', 'orange', 'oranges', 'cesta', 'basket', 'lemon', 'limon', 'limones'], //kitchen
   ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
 ];
 
