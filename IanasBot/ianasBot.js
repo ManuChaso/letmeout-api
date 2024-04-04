@@ -75,6 +75,9 @@ client.on('messageCreate', (message) => {
     case 'Luca':
       message.reply(':bug:');
       break;
+    case 'Santi' || 'santi':
+      message.reply('Esto ya lo vimos en Javascript');
+      break;
   }
 });
 
@@ -128,7 +131,7 @@ function sendGameData(data, res) {
 }
 
 function startIanasBot() {
-  client.login('MTIxNDczMjE4NTkxNjAxODc0OQ.GUGsoN.7ytzhCN8U79RivYI9v25O9b-3Qyo6dKTZIMDZ8');
+  client.login(process.env.DISCORD_TOKEN);
 }
 
 module.exports = { startIanasBot, sendGameData };
