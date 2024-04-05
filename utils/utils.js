@@ -169,7 +169,7 @@ function joinLobby(data, client) {
                 console.log('Lobby updated', lobbyUpdated);
 
                 const res = {
-                  tag: 'createLobby',
+                  tag: 'joinLobby',
                   lobbyCode: lobbyUpdated.lobbyCode,
                   players: lobbyUpdated.players,
                 };
@@ -218,9 +218,13 @@ function exitLobby(client) {
               { new: true }
             )
             .then((updatedLobby) => {
-              lobbys.delete(client);
               console.log(updatedLobby);
-              resolve(updatedLobby);
+              const res = {
+                tag: 'exitLobby',
+                lobbyCode: updatedLobby.lobbyCode,
+                players: updatedLobby.players,
+              };
+              resolve(res);
             })
             .catch((err) => {
               console.error('Error updating lobby when the player lefts', err);
@@ -511,4 +515,5 @@ module.exports = {
   generateFinalCode,
   lose,
   setPlayerTime,
+  lobbys,
 };
