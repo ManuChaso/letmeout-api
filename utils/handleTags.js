@@ -11,6 +11,7 @@ const {
   generateFinalCode,
   lose,
   setPlayerTime,
+  lobbys,
 } = require('./utils.js');
 
 function handleTag(data, client, ws) {
@@ -29,7 +30,10 @@ function handleTag(data, client, ws) {
 
     case 'exitLobby':
       exitLobby(client)
-        .then((res) => sendMessage(res, client, ws))
+        .then((res) => {
+          sendMessage(res, client, ws);
+          lobbys.delete(client);
+        })
         .catch((err) => console.error('Error in promise at leaving lobby', err));
       break;
 
