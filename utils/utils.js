@@ -302,7 +302,14 @@ function chatMessage(data) {
 
     message.forEach((word) => {
       for (let i = 0; i < 3; i++) {
-        if (f1KeyWords[i].includes(word.toLowerCase())) {
+        if (
+          f1KeyWords[i].includes(
+            word
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+          )
+        ) {
           i == 0 && (resMessage.ticket = 'bathroom');
           i == 1 && (resMessage.ticket = 'kitchen');
           i == 2 && (resMessage.ticket = 'living');
