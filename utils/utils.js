@@ -91,6 +91,7 @@ function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
+      difficulty: data.difficulty,
       players: [
         {
           name: data.name,
@@ -339,6 +340,7 @@ function assignRoom(data) {
               lobbyCode: lobbyUpdated.lobbyCode,
               players: lobbyUpdated.players,
               date: randomDates[Math.floor(Math.random() * randomDates.length)],
+              difficulty: lobbyUpdated.difficulty,
             };
 
             resolve(res);

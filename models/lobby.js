@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const lobbySchema = new Schema({
   lobbyCode: String,
+  difficulty: String,
   players: [],
   finalCode: String,
 });
