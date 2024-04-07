@@ -91,7 +91,7 @@ function createLobby(data, client) {
   return new Promise((resolve, reject) => {
     const createLobby = new lobbyModel({
       lobbyCode: data.lobbyCode,
-      difficulty: data.difficulty,
+      difficulty: data.message,
       players: [
         {
           name: data.name,
