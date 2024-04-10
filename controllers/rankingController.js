@@ -7,6 +7,7 @@ async function rankingSave(req, res) {
   lobbyModel
     .findOne({ lobbyCode: data.lobbyCode })
     .then((lobbyFound) => {
+      const difficulty = lobbyFound.difficulty;
       const teamName = lobbyFound.players
         .map((player) => player.name.substring(0, 1))
         .join('')
@@ -14,8 +15,9 @@ async function rankingSave(req, res) {
       const timeArray = lobbyFound.players.map((player) => player.time);
       const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
       const createRanking = new rankingModel({
+        difficulty: difficulty,
         teamName: teamName,
-        teamScore: `${teamTime}pts`,
+        teamScore: teamTime,
         players: lobbyFound.players.map((player) => ({ name: player.name, time: player.time })),
       });
 
