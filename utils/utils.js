@@ -288,37 +288,46 @@ function playerState(data) {
   });
 }
 
-function chatMessage(data) {
-  console.log(data.signal);
-  const resMessage = {
-    tag: 'chat',
-    ticket: '',
-    name: data.name,
-    message: data.message,
-  };
-  if (data.signal) {
-    const message = data.message.split(' ');
-    console.log(message);
+async function chatMessage(data, client) {
+  try {
+    const lobby = await lobbyModel.findOne({ lobbyCode: lobbys.get(client).lobbyCode });
+    let room;
 
-    message.forEach((word) => {
-      for (let i = 0; i < 3; i++) {
-        if (
-          f1KeyWords[i].includes(
-            word
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-          )
-        ) {
-          i == 0 && (resMessage.ticket = 'bathroom');
-          i == 1 && (resMessage.ticket = 'kitchen');
-          i == 2 && (resMessage.ticket = 'living');
+    lobby.players.forEach((player) => player.name == lobbys.get(client).name && (room = player.room));
+
+    console.log(data.signal);
+    const resMessage = {
+      tag: 'chat',
+      ticket: '',
+      name: data.name,
+      message: data.message,
+    };
+    if (data.signal) {
+      const message = data.message.split(' ');
+      console.log(message);
+
+      message.forEach((word) => {
+        for (let i = 0; i < 3; i++) {
+          if (
+            f1KeyWords[i].includes(
+              word
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+            )
+          ) {
+            i == 0 && room == 'living' && (resMessage.ticket = 'bathroom');
+            i == 1 && room == 'bathroom' && (resMessage.ticket = 'kitchen');
+            i == 2 && room == 'kitchen' && (resMessage.ticket = 'living');
+          }
         }
-      }
-    });
-    return resMessage;
-  } else {
-    return resMessage;
+      });
+      return resMessage;
+    } else {
+      return resMessage;
+    }
+  } catch (err) {
+    console.log('Error sending message: ', err);
   }
 }
 

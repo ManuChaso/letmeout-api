@@ -44,7 +44,7 @@ function handleTag(data, client, ws) {
       break;
 
     case 'chatMessage':
-      const res = chatMessage(data);
+      const res = chatMessage(data, client);
       sendMessage(res, client, ws);
       break;
 
