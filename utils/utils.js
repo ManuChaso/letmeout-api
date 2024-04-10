@@ -100,7 +100,7 @@ function createLobby(data, client) {
           finalCode: Math.floor(Math.random() * 10),
           finalState: false,
           room: '',
-          time: '',
+          score: '',
         },
       ],
       finalCode: '',
@@ -154,7 +154,7 @@ function joinLobby(data, client) {
                       finalCode: Math.floor(Math.random() * 10),
                       finalState: false,
                       room: '',
-                      time: '',
+                      score: '',
                     },
                   },
                 },
@@ -475,7 +475,7 @@ function setPlayerTime(data, client) {
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
       .then((lobbyFound) => {
         const newPlayers = lobbyFound.players.map((player) =>
-          player.name == lobbys.get(client).name ? { ...player, time: data.message } : player
+          player.name == lobbys.get(client).name ? { ...player, score: data.message } : player
         );
 
         lobbyModel

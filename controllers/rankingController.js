@@ -12,13 +12,13 @@ async function rankingSave(req, res) {
         .map((player) => player.name.substring(0, 1))
         .join('')
         .toUpperCase();
-      const timeArray = lobbyFound.players.map((player) => player.time);
-      const teamTime = timeArray.reduce((total, time) => parseInt(total) + parseInt(time), 0);
+      const scoreArray = lobbyFound.players.map((player) => player.score);
+      const teamScore = scoreArray.reduce((total, score) => parseInt(total) + parseInt(score), 0);
       const createRanking = new rankingModel({
         difficulty: difficulty,
         teamName: teamName,
-        teamScore: teamTime,
-        players: lobbyFound.players.map((player) => ({ name: player.name, time: player.time })),
+        teamScore: teamScore,
+        players: lobbyFound.players.map((player) => ({ name: player.name, score: player.score })),
       });
 
       console.log(createRanking);
