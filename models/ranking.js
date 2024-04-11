@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const rankingSchema = new Schema({
   difficulty: String,
   teamName: String,
-  teamScore: String,
+  teamScore: Number,
   players: [],
 });
 

@@ -44,8 +44,7 @@ function handleTag(data, client, ws) {
       break;
 
     case 'chatMessage':
-      const res = chatMessage(data, client);
-      sendMessage(res, client, ws);
+      chatMessage(data, client).then((res) => sendMessage(res, client, ws));
       break;
 
     case 'assignRoom':

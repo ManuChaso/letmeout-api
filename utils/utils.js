@@ -122,6 +122,7 @@ function createLobby(data, client) {
           tag: 'createLobby',
           lobbyCode: savedLobby.lobbyCode,
           players: savedLobby.players,
+          difficulty: savedLobby.difficulty,
         };
         resolve(res);
       })
@@ -173,6 +174,7 @@ function joinLobby(data, client) {
                   tag: 'joinLobby',
                   lobbyCode: lobbyUpdated.lobbyCode,
                   players: lobbyUpdated.players,
+                  difficulty: lobbyUpdated.difficulty,
                 };
 
                 resolve(res);
@@ -289,46 +291,48 @@ function playerState(data) {
 }
 
 async function chatMessage(data, client) {
-  try {
-    const lobby = await lobbyModel.findOne({ lobbyCode: lobbys.get(client).lobbyCode });
-    let room;
+  return new Promise((resolve, reject) => {
+    lobbyModel
+      .findOne({ lobbyCode: lobbys.get(client).lobbyCode })
+      .then((lobbyFound) => {
+        let room;
+        lobbyFound.players.forEach((player) => player.name == lobbys.get(client).name && (room = player.room));
+        console.log(data.signal);
+        const resMessage = {
+          tag: 'chat',
+          ticket: '',
+          name: data.name,
+          message: data.message,
+        };
+        if (data.signal) {
+          const message = data.message.split(' ');
+          console.log(message);
 
-    lobby.players.forEach((player) => player.name == lobbys.get(client).name && (room = player.room));
-
-    console.log(data.signal);
-    const resMessage = {
-      tag: 'chat',
-      ticket: '',
-      name: data.name,
-      message: data.message,
-    };
-    if (data.signal) {
-      const message = data.message.split(' ');
-      console.log(message);
-
-      message.forEach((word) => {
-        for (let i = 0; i < 3; i++) {
-          if (
-            f1KeyWords[i].includes(
-              word
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-            )
-          ) {
-            i == 0 && room == 'living' && (resMessage.ticket = 'bathroom');
-            i == 1 && room == 'bathroom' && (resMessage.ticket = 'kitchen');
-            i == 2 && room == 'kitchen' && (resMessage.ticket = 'living');
-          }
+          message.forEach((word) => {
+            for (let i = 0; i < 3; i++) {
+              if (
+                f1KeyWords[i].includes(
+                  word
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                )
+              ) {
+                i == 0 && room == 'living' && (resMessage.ticket = 'bathroom');
+                i == 1 && room == 'bathroom' && (resMessage.ticket = 'kitchen');
+                i == 2 && room == 'kitchen' && (resMessage.ticket = 'living');
+              }
+            }
+          });
+          resolve(resMessage);
+        } else {
+          resolve(resMessage);
         }
+      })
+      .catch((err) => {
+        console.log('Error sending message: ', err);
       });
-      return resMessage;
-    } else {
-      return resMessage;
-    }
-  } catch (err) {
-    console.log('Error sending message: ', err);
-  }
+  });
 }
 
 function assignRoom(data) {
