@@ -1,5 +1,6 @@
 const { sendGameData } = require('../IanasBot/ianasBot');
 
+//Function to store game data on a CSV
 function gameData(req, res) {
   const data = req.body;
   const stats = { userName: data.username };

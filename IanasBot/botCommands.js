@@ -1,3 +1,5 @@
+//slash commands for discord bot
+
 const lobbysList = {
   name: 'lobbys',
   description: 'Show active lobbys',

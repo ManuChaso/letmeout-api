@@ -1,14 +1,19 @@
+//Dependencies
 const { Client, GatewayIntentBits, SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { getLobbys, getLobby } = require('../utils/utils');
 
+//Bot commands
 const { lobbysList, lobbyInfo, gameData } = require('./botCommands.js');
 
+//Discord channel where game data is sent
 const channelId = '1223681352809975829';
 
+//Create Discord bot
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
 
+//Bot events
 client.on('ready', async () => {
   console.log('Bot conectado');
 
@@ -81,8 +86,8 @@ client.on('messageCreate', (message) => {
   }
 });
 
+//Send game data when players lose
 function sendGameData(data, res) {
-  const entries = Object.entries(data);
   const embed = new EmbedBuilder()
     .setTitle(`Datos del jugador: ${data.userName}`)
     .setDescription('Letmeout Statistics')
@@ -130,6 +135,7 @@ function sendGameData(data, res) {
   }
 }
 
+//Start bot
 function startIanasBot() {
   client.login(process.env.DISCORD_TOKEN);
 }

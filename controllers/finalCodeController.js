@@ -1,5 +1,6 @@
 const lobbyModel = require('../models/lobby');
 
+//Function to get personal finalCode
 function getFinalCode(req, res) {
   const id = decodeURIComponent(req.query.id);
   const lobbyCode = req.query.lobbyCode;

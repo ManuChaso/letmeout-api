@@ -1,14 +1,17 @@
 const lobbyModel = require('../models/lobby.js');
 const randomstring = require('randomstring');
 
+//Clients in lobbys
 const lobbys = new Map();
 
+//Keywords to trigger events in chat
 const f1KeyWords = [
   ['sink', 'lavamanos', 'lavabo', 'bathroom', 'baño', 'grifo', 'faucets', 'fregadero', 'baño'], //bathroom
   ['naranjas', 'naranja', 'orange', 'oranges', 'cesta', 'basket', 'lemon', 'limon', 'limones'], //kitchen
   ['sofa', 'couch', 'sillon', 'carpet', 'alfombra'], //living
 ];
 
+//Random dates for gameplay
 const randomDates = [
   'March 15, 1993',
   'November 5, 1992',
@@ -32,6 +35,7 @@ const randomDates = [
   'December 11, 1996',
 ];
 
+//Function for WebSocket events
 function sendMessage(res, client, ws) {
   if (lobbys.has(client)) {
     const user = lobbys.get(client);
@@ -290,7 +294,7 @@ function playerState(data) {
   });
 }
 
-async function chatMessage(data, client) {
+function chatMessage(data, client) {
   return new Promise((resolve, reject) => {
     lobbyModel
       .findOne({ lobbyCode: lobbys.get(client).lobbyCode })

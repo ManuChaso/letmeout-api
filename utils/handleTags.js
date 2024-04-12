@@ -14,6 +14,7 @@ const {
   lobbys,
 } = require('./utils.js');
 
+//Handle WebSocket tag
 function handleTag(data, client, ws) {
   switch (data.tag) {
     case 'createLobby':

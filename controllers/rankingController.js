@@ -1,6 +1,7 @@
 const lobbyModel = require('../models/lobby.js');
 const rankingModel = require('../models/ranking.js');
 
+//Function to save game stats on ranking
 async function rankingSave(req, res) {
   const data = req.body;
 
@@ -38,6 +39,7 @@ async function rankingSave(req, res) {
     });
 }
 
+//Function to get the best ten on ranking
 async function getRankings(req, res) {
   try {
     const rankings = await rankingModel.find().sort({ teamScore: -1 }).limit(10);
